@@ -1,9 +1,3 @@
 <resources>
     <string name="app_name" translatable="false">FinancialApp</string>
-
-    <string name="expenses">Expenses</string>
-    <string name="gains">Gains</string>
-    <string name="account">Account</string>
-    <string name="articles">Articles</string>
-    <string name="settings">Settings</string>
 </resources>
