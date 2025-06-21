@@ -2,9 +2,13 @@ package com.example.financialapp.feature_articles.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.financialapp.core.network.ErrorHandler
+import com.example.financialapp.core.network.FinResult
 import com.example.financialapp.feature_articles.domain.usecase.GetArticlesUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -18,25 +22,16 @@ class ArticlesViewModel : ViewModel() {
         _state.value
     )
 
+    private val _action = MutableSharedFlow<ArticleAction>()
+    val action = _action.asSharedFlow()
+
     private val articlesUseCase = GetArticlesUseCase()
 
-    init {
-        viewModelScope.launch {
-            val articles = articlesUseCase.invoke()
-            _state.update {
-                it.copy(
-                    articles = articles
-                )
-            }
-        }
-    }
 
     fun onEvent(
         event: ArticlesEvent
     ) {
-
         when (event) {
-
             is ArticlesEvent.OnSearchValueChanged -> {
                 _state.update {
                     it.copy(
@@ -45,7 +40,40 @@ class ArticlesViewModel : ViewModel() {
                 }
             }
 
+            ArticlesEvent.OnLoadArticles -> {
+                loadArticles()
+            }
         }
+    }
 
+    private fun loadArticles() {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    status = FinResult.Loading
+                )
+            }
+
+            val result = articlesUseCase.invoke()
+
+            result
+                .onSuccess { res ->
+                    _state.update {
+                        it.copy(
+                            status = FinResult.Success,
+                            articles = res
+                        )
+                    }
+                }
+                .onFailure { err ->
+                    _state.update {
+                        it.copy(
+                            status = FinResult.Error
+                        )
+                    }
+
+                    _action.emit(ArticleAction.ShowSnackBar(ErrorHandler().handleException(err)))
+                }
+        }
     }
 }
