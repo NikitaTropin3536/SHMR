@@ -7,7 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.financialapp.R
-import com.example.financialapp.components.FinListItem
+import com.example.financialapp.components.item.FinListItem
+import com.example.financialapp.core.converter.toEmoji
 import com.example.financialapp.feature_account.presentation.AccountState
 
 @Composable
@@ -20,14 +21,13 @@ fun AccountView(
             .fillMaxSize()
     ) {
 
-        state.account.forEach {
-
+        state.accounts.forEach {
             FinListItem(
                 emoji = "\uD83D\uDCB0",
                 title = "Баланс",
                 description = null,
                 backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                trailingText = "${it.balance} ${it.currency}",
+                trailingText = "${it.balance} ${it.currency.toEmoji()}",
                 trailingIcon = R.drawable.ic_light_arrow,
                 backgroundEmojiColor = Color.White
             ) {
@@ -37,14 +37,14 @@ fun AccountView(
             FinListItem(
                 title = "Валюта",
                 description = null,
-                backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                trailingText = it.currency,
+                backgroundColor = MaterialTheme
+                    .colorScheme.surfaceContainerLow,
+                trailingText = it.currency.toEmoji(),
                 trailingIcon = R.drawable.ic_light_arrow,
                 isShowDivider = false,
             ) {
                 /* TODO */
             }
-
         }
 
     }

@@ -10,29 +10,51 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financialapp.R
-import com.example.financialapp.components.BottomBar
-import com.example.financialapp.components.TopBar
+import com.example.financialapp.components.item.FinLoadingBar
+import com.example.financialapp.components.nav.BottomBar
+import com.example.financialapp.components.nav.TopBar
+import com.example.financialapp.core.network.FinResult
+import com.example.financialapp.feature_account.presentation.AccountAction
+import com.example.financialapp.feature_account.presentation.AccountEvent
 import com.example.financialapp.feature_account.presentation.AccountViewModel
+import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AccountScreen(
     navController: NavController,
-    viewModel: AccountViewModel = AccountViewModel()
+    viewModel: AccountViewModel = koinViewModel<AccountViewModel>()
 ) {
 
     val state by viewModel.state.collectAsState()
+    val snackBarHostState = remember { SnackbarHostState() }
+
+
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(AccountEvent.OnLoadAccount)
+
+        viewModel.action.collectLatest { action ->
+            when (action) {
+                is AccountAction.ShowSnackBar -> {
+                    snackBarHostState.showSnackbar(action.message)
+                }
+            }
+        }
+    }
 
     Scaffold(
-
         bottomBar = {
             BottomBar(
                 navController = navController
@@ -40,10 +62,10 @@ fun AccountScreen(
         },
 
         topBar = {
-
             TopBar(
                 title = "Мой счет",
-                icon = {
+
+                actions = {
                     IconButton(
                         onClick = { /* TODO */ }
                     ) {
@@ -54,23 +76,21 @@ fun AccountScreen(
                         )
                     }
                 }
-            )
 
+            )
         },
 
         modifier = Modifier
             .fillMaxSize(),
-
-        containerColor = MaterialTheme.colorScheme.onSurface,
+        containerColor = MaterialTheme
+            .colorScheme.onSurface,
 
         floatingActionButton = {
-
             FloatingActionButton(
                 onClick = { /* TODO */ },
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
-
                 Icon(
                     painter = painterResource(R.drawable.ic_plus),
                     contentDescription = "add button",
@@ -78,18 +98,23 @@ fun AccountScreen(
                         .size(16.dp),
                     tint = Color.White
                 )
-
             }
-
         },
 
         floatingActionButtonPosition = FabPosition.End
     ) { padding ->
 
-        AccountView(
-            modifier = Modifier.padding(padding),
-            state = state
-        )
+        if (state.status != FinResult.Success) {
+            FinLoadingBar(
+                modifier = Modifier
+                    .padding(padding)
+            )
+        } else {
+            AccountView(
+                modifier = Modifier.padding(padding),
+                state = state
+            )
+        }
 
     }
 }

@@ -1,73 +1,29 @@
 package com.example.financialapp.feature_articles.data.repository
 
+import com.example.financialapp.BuildConfig
+import com.example.financialapp.core.network.ApiException
+import com.example.financialapp.core.network.ktorClient
+import com.example.financialapp.core.network.safeCall
 import com.example.financialapp.feature_articles.domain.repository.ArticlesRepository
-import com.example.financialapp.feature_expenses.domain.model.CategoryModel
+import com.example.financialapp.feature_transactions.domain.model.CategoryModel
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 
 class ArticleRepositoryImpl : ArticlesRepository {
 
-    override suspend fun getArticles(): List<CategoryModel> {
-        /* TODO API */
+    override suspend fun getArticles(): Result<List<CategoryModel>> {
 
-        return listOf(
+        return safeCall {
+            val response: HttpResponse = ktorClient.get("${BuildConfig.BASE_URL}/categories")
 
-            CategoryModel(
-                id = 0,
-                name = "Аренда квартиры",
-                emoji = "\uD83C\uDFE1",
-                isIncome = true
-            ),
+            if (response.status != HttpStatusCode.OK) {
+                throw ApiException("Ошибка API: ${response.status}")
+            }
 
-            CategoryModel(
-                id = 0,
-                name = "Одежда",
-                emoji = "\uD83D\uDC57",
-                isIncome = true
-            ),
-
-            CategoryModel(
-                id = 0,
-                name = "На собачку",
-                emoji = "\uD83D\uDC36",
-                isIncome = true
-            ),
-
-            CategoryModel(
-                id = 0,
-                name = "На собачку",
-                emoji = "\uD83D\uDC36",
-                isIncome = true
-            ),
-
-            CategoryModel(
-                id = 0,
-                name = "Ремонт квартиры",
-                emoji = "РК",
-                isIncome = true
-            ),
-
-            CategoryModel(
-                id = 0,
-                name = "Продукты",
-                emoji = "\uD83C\uDF6D",
-                isIncome = true
-            ),
-
-            CategoryModel(
-                id = 0,
-                name = "Спортзал",
-                emoji = "\uD83C\uDFCB\uFE0F",
-                isIncome = true
-            ),
-
-            CategoryModel(
-                id = 0,
-                name = "Медицина",
-                emoji = "\uD83D\uDC8A",
-                isIncome = true
-            ),
-
-            )
-
+            response.body()
+        }
     }
 
 }
