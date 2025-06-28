@@ -37,8 +37,7 @@ fun FinNumTextField(
     title: String,
     previousData: String,
     height: Dp = 56.dp,
-    backgroundColor: Color = MaterialTheme
-        .colorScheme.onSurface,
+    backgroundColor: Color = MaterialTheme.colorScheme.onSurface,
     onValueChange: (String) -> Unit,
 ) {
 
@@ -70,8 +69,7 @@ fun FinNumTextField(
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
                     letterSpacing = 0.5.sp,
-                    color = MaterialTheme
-                        .colorScheme.inverseOnSurface
+                    color = MaterialTheme.colorScheme.inverseOnSurface
                 )
             }
 
@@ -79,7 +77,6 @@ fun FinNumTextField(
 
             OutlinedTextField(
                 value = textValue,
-
                 onValueChange = {
                     if (it.all { n -> n.isDigit() || n == '.' }) {
                         textValue = it
@@ -90,7 +87,6 @@ fun FinNumTextField(
                 modifier = Modifier
                     .widthIn(min = 60.dp)
                     .height(height),
-
                 textStyle = LocalTextStyle.current.copy(
                     textAlign = TextAlign.End,
                     fontSize = 16.sp
@@ -98,21 +94,21 @@ fun FinNumTextField(
 
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
+
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
-                    cursorColor = MaterialTheme
-                        .colorScheme.primary,
-                    focusedTextColor = MaterialTheme
-                        .colorScheme.inverseOnSurface,
-                    unfocusedTextColor = MaterialTheme
-                        .colorScheme.inverseOnSurface
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    focusedTextColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.inverseOnSurface
                 )
-            )
 
+            )
         }
+
     }
 
 }
+

@@ -10,21 +10,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.financialapp.R
 import com.example.financialapp.components.item.FinLoadingBar
 import com.example.financialapp.components.item.FinSnackBar
 import com.example.financialapp.components.nav.BottomBar
 import com.example.financialapp.components.nav.TopBar
 import com.example.financialapp.core.network.FinResult
-import com.example.financialapp.feature_articles.presentation.ArticleAction
-import com.example.financialapp.feature_articles.presentation.ArticlesEvent
-import com.example.financialapp.feature_articles.presentation.ArticlesViewModel
+import com.example.financialapp.feature_articles.presentation.viewmodel.ArticleAction
+import com.example.financialapp.feature_articles.presentation.viewmodel.ArticlesEvent
+import com.example.financialapp.feature_articles.presentation.viewmodel.ArticlesViewModel
 import kotlinx.coroutines.flow.collectLatest
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ArticlesScreen(
-    viewModel: ArticlesViewModel = ArticlesViewModel(),
+    viewModel: ArticlesViewModel = koinViewModel<ArticlesViewModel>(),
     navController: NavController
 ) {
 
@@ -51,7 +54,7 @@ fun ArticlesScreen(
         },
         topBar = {
             TopBar(
-                title = "Мои статьи",
+                title = stringResource(R.string.my_articles),
                 actions = { }
             )
         },

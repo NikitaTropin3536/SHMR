@@ -17,8 +17,8 @@ import com.example.financialapp.components.field.FinEditText
 import com.example.financialapp.components.field.FinNumTextField
 import com.example.financialapp.components.field.FinTimePicker
 import com.example.financialapp.components.item.FinListItem
-import com.example.financialapp.feature_transactions.presentation.expenses.create.CreateExpensesEvent
-import com.example.financialapp.feature_transactions.presentation.expenses.create.CreateExpensesState
+import com.example.financialapp.feature_transactions.presentation.expenses.create.viewmodel.CreateExpensesEvent
+import com.example.financialapp.feature_transactions.presentation.expenses.create.viewmodel.CreateExpensesState
 
 @Composable
 fun CreateExpensesView (

@@ -3,6 +3,10 @@ package com.example.financialapp.navigation
 import androidx.annotation.DrawableRes
 import com.example.financialapp.R
 
+/**
+Все табы приложения
+ */
+
 sealed class Bar (
     val title: String,
     @DrawableRes val icon: Int,

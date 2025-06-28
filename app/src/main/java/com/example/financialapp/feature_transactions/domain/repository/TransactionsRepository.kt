@@ -1,6 +1,6 @@
 package com.example.financialapp.feature_transactions.domain.repository
 
-import com.example.financialapp.feature_account.domain.model.AccountBriefModel
+import com.example.financialapp.feature_bill.domain.model.AccountBriefModel
 import com.example.financialapp.feature_transactions.data.dto.TransactionDto
 import com.example.financialapp.feature_transactions.domain.model.TransactionModel
 

@@ -1,8 +1,12 @@
 package com.example.financialapp.feature_transactions.domain.model
 
-import com.example.financialapp.feature_account.domain.model.AccountBriefModel
+import com.example.financialapp.feature_bill.domain.model.AccountBriefModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+/**
+ * Модель транзакций
+ * */
 
 @Serializable
 data class TransactionModel (

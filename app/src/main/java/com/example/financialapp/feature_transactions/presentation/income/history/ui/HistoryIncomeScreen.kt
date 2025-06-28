@@ -21,9 +21,9 @@ import com.example.financialapp.components.item.FinSnackBar
 import com.example.financialapp.components.nav.BottomBar
 import com.example.financialapp.components.nav.TopBar
 import com.example.financialapp.core.network.FinResult
-import com.example.financialapp.feature_transactions.presentation.income.history.HistoryIncomeAction
-import com.example.financialapp.feature_transactions.presentation.income.history.HistoryIncomeEvent
-import com.example.financialapp.feature_transactions.presentation.income.history.HistoryIncomeViewModel
+import com.example.financialapp.feature_transactions.presentation.income.history.viewmodel.HistoryIncomeAction
+import com.example.financialapp.feature_transactions.presentation.income.history.viewmodel.HistoryIncomeEvent
+import com.example.financialapp.feature_transactions.presentation.income.history.viewmodel.HistoryIncomeViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 

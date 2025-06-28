@@ -19,9 +19,9 @@ import com.example.financialapp.R
 import com.example.financialapp.components.item.FinSnackBar
 import com.example.financialapp.components.nav.BottomBar
 import com.example.financialapp.components.nav.TopBar
-import com.example.financialapp.feature_transactions.presentation.expenses.create.CreateExpensesEvent
-import com.example.financialapp.feature_transactions.presentation.expenses.create.CreateExpensesViewModel
-import com.example.financialapp.feature_transactions.presentation.expenses.today.ExpensesAction
+import com.example.financialapp.feature_transactions.presentation.expenses.create.viewmodel.CreateExpensesAction
+import com.example.financialapp.feature_transactions.presentation.expenses.create.viewmodel.CreateExpensesEvent
+import com.example.financialapp.feature_transactions.presentation.expenses.create.viewmodel.CreateExpensesViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -38,7 +38,7 @@ fun CreateExpensesScreen (
 
         viewModel.action.collectLatest { action ->
             when (action) {
-                is ExpensesAction.ShowSnackBar -> {
+                is CreateExpensesAction.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(action.message)
                 }
             }

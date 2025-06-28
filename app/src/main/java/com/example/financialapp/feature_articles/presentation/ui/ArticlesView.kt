@@ -10,11 +10,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.financialapp.R
 import com.example.financialapp.components.field.FinEditText
 import com.example.financialapp.components.item.FinListItem
-import com.example.financialapp.feature_articles.presentation.ArticlesEvent
-import com.example.financialapp.feature_articles.presentation.ArticlesState
+import com.example.financialapp.feature_articles.presentation.viewmodel.ArticlesEvent
+import com.example.financialapp.feature_articles.presentation.viewmodel.ArticlesState
 
 @Composable
 fun ArticlesView(
@@ -33,7 +35,7 @@ fun ArticlesView(
             )
     ) {
         FinEditText(
-            label = "Найти статью",
+            label = stringResource(R.string.find_article),
             previousData = "",
             onTrailingIconClick = {
                 onEvent(

@@ -75,8 +75,8 @@ fun FinListItem(
                     Text(
                         text = it,
                         fontSize =
-                        if (!isUnicodeEscape(it)) 18.sp
-                        else 10.sp,
+                            if (!isUnicodeEscape(it)) 18.sp
+                            else 10.sp,
                         fontWeight = FontWeight(500),
                         lineHeight = 22.sp,
                         letterSpacing = 0.sp,
@@ -152,7 +152,6 @@ fun FinListItem(
                 )
             }
         }
-
         if (isShowDivider) {
             HorizontalDivider(
                 modifier = Modifier
@@ -161,7 +160,6 @@ fun FinListItem(
                 color = MaterialTheme.colorScheme.surfaceDim,
             )
         }
-
     }
 }
 

@@ -27,9 +27,9 @@ import com.example.financialapp.components.item.FinSnackBar
 import com.example.financialapp.components.nav.BottomBar
 import com.example.financialapp.components.nav.TopBar
 import com.example.financialapp.core.network.FinResult
-import com.example.financialapp.feature_transactions.presentation.expenses.today.ExpensesAction
-import com.example.financialapp.feature_transactions.presentation.expenses.today.ExpensesEvent
-import com.example.financialapp.feature_transactions.presentation.expenses.today.ExpensesViewModel
+import com.example.financialapp.feature_transactions.presentation.expenses.today.viewmodel.ExpensesAction
+import com.example.financialapp.feature_transactions.presentation.expenses.today.viewmodel.ExpensesEvent
+import com.example.financialapp.feature_transactions.presentation.expenses.today.viewmodel.ExpensesViewModel
 import com.example.financialapp.navigation.Route
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel

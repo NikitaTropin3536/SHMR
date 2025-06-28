@@ -3,6 +3,10 @@ package com.example.financialapp.core.network
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.delay
 
+/**
+ * Выполняет перезапрос в случае 500-ой ошибки
+ */
+
 suspend fun <T> retryRequest(
     maxRetries: Int = 3,
     initialDelay: Long = 2000,

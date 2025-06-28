@@ -2,7 +2,7 @@ package com.example.financialapp.feature_transactions.presentation.expenses.hist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.financialapp.core.network.ErrorHandler
+import com.example.financialapp.core.error.ErrorHandler
 import com.example.financialapp.core.network.FinResult
 import com.example.financialapp.feature_transactions.domain.usecase.GetAccountUseCase
 import com.example.financialapp.feature_transactions.domain.usecase.GetTransactionsUseCase
@@ -14,21 +14,25 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class HistoryExpensesViewModel(
-    private val accountsUseCase: GetAccountUseCase
+/**
+ * VM экрана истории расходов
+ * */
+
+class HistoryExpensesViewModel (
+    private val accountsUseCase : GetAccountUseCase,
+    private val transactionUseCase: GetTransactionsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HistoryExpensesState())
     val state = _state.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(5000L),
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
         _state.value
     )
 
     private val _action = MutableSharedFlow<HistoryExpensesAction>()
     val action = _action.asSharedFlow()
 
-    private val transactionUseCase = GetTransactionsUseCase()
 
     fun onEvent(
         event: HistoryExpensesEvent
@@ -66,7 +70,7 @@ class HistoryExpensesViewModel(
     }
 
     private fun loadExpenses(
-        id: Int
+        id : Int
     ) {
         viewModelScope.launch {
             _state.update {
@@ -99,19 +103,13 @@ class HistoryExpensesViewModel(
                         )
                     }
 
-                    _action.emit(
-                        HistoryExpensesAction.ShowSnackBar(
-                            ErrorHandler().handleException(
-                                err
-                            )
-                        )
-                    )
+                    _action.emit(HistoryExpensesAction.ShowSnackBar(ErrorHandler().handleException(err)))
                 }
         }
     }
 
     private fun loadAccounts(
-        onSuccess: (Int) -> Unit,
+        onSuccess : (Int) -> Unit,
     ) {
         viewModelScope.launch {
             _state.update {
@@ -148,13 +146,7 @@ class HistoryExpensesViewModel(
                         )
                     }
 
-                    _action.emit(
-                        HistoryExpensesAction.ShowSnackBar(
-                            ErrorHandler().handleException(
-                                err
-                            )
-                        )
-                    )
+                    _action.emit(HistoryExpensesAction.ShowSnackBar(ErrorHandler().handleException(err)))
                 }
         }
     }

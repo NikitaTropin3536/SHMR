@@ -1,7 +1,7 @@
 package com.example.financialapp.feature_articles.data.repository
 
 import com.example.financialapp.BuildConfig
-import com.example.financialapp.core.network.ApiException
+import com.example.financialapp.core.error.ApiException
 import com.example.financialapp.core.network.ktorClient
 import com.example.financialapp.core.network.safeCall
 import com.example.financialapp.feature_articles.domain.repository.ArticlesRepository
@@ -10,6 +10,10 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
+
+/**
+ * Репозиторий для получения статей
+ * */
 
 class ArticleRepositoryImpl : ArticlesRepository {
 

@@ -28,7 +28,10 @@ fun FinButton(
             .fillMaxWidth()
             .padding(20.dp),
         shape = RoundedCornerShape(40),
-        colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
+
+        colors = ButtonDefaults.buttonColors(
+            containerColor = backgroundColor
+        ),
 
         content = {
             Text(
@@ -40,7 +43,6 @@ fun FinButton(
                 color = White,
             )
         },
-
         onClick = onClick
     )
 }

@@ -27,9 +27,9 @@ import com.example.financialapp.components.item.FinSnackBar
 import com.example.financialapp.components.nav.BottomBar
 import com.example.financialapp.components.nav.TopBar
 import com.example.financialapp.core.network.FinResult
-import com.example.financialapp.feature_transactions.presentation.income.today.IncomeAction
-import com.example.financialapp.feature_transactions.presentation.income.today.IncomeEvent
-import com.example.financialapp.feature_transactions.presentation.income.today.IncomeViewModel
+import com.example.financialapp.feature_transactions.presentation.income.today.viewmodel.IncomeAction
+import com.example.financialapp.feature_transactions.presentation.income.today.viewmodel.IncomeEvent
+import com.example.financialapp.feature_transactions.presentation.income.today.viewmodel.IncomeViewModel
 import com.example.financialapp.navigation.Route
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel

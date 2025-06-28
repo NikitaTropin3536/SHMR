@@ -13,8 +13,8 @@ import com.example.financialapp.components.field.FinDatePicker
 import com.example.financialapp.components.item.FinListItem
 import com.example.financialapp.core.converter.toEmoji
 import com.example.financialapp.core.converter.toFormat
-import com.example.financialapp.feature_transactions.presentation.income.history.HistoryIncomeEvent
-import com.example.financialapp.feature_transactions.presentation.income.history.HistoryIncomeState
+import com.example.financialapp.feature_transactions.presentation.income.history.viewmodel.HistoryIncomeEvent
+import com.example.financialapp.feature_transactions.presentation.income.history.viewmodel.HistoryIncomeState
 
 @Composable
 fun HistoryIncomeView(
@@ -72,7 +72,7 @@ fun HistoryIncomeView(
                     emoji = it.categoryModel.emoji,
                     title = it.categoryModel.name,
                     description = it.comment,
-                    trailingSubText = it.createdAt.split("T")[1].substring(0, 5),
+                    trailingSubText = it.createdAt.substring(0, endIndex = 16).replace("T", " "),
                     trailingText = "${it.amount} ${state.accounts[0].currency.toEmoji()}",
                     height = 70.dp
                 ) {

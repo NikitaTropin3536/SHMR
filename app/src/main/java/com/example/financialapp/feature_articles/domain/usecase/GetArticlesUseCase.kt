@@ -4,13 +4,17 @@ import com.example.financialapp.core.network.retryRequest
 import com.example.financialapp.feature_articles.data.repository.ArticleRepositoryImpl
 import com.example.financialapp.feature_transactions.domain.model.CategoryModel
 
-class GetArticlesUseCase {
+/**
+ * Use Case для получения статей
+ * */
 
-    private val repository: ArticleRepositoryImpl = ArticleRepositoryImpl()
+class GetArticlesUseCase (
+    private val repository: ArticleRepositoryImpl
+) {
 
     suspend operator fun invoke(): Result<List<CategoryModel>> {
 
-        return retryRequest() {
+        return retryRequest {
             repository.getArticles()
         }
 

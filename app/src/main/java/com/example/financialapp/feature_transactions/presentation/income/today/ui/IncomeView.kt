@@ -10,7 +10,7 @@ import com.example.financialapp.R
 import com.example.financialapp.components.item.FinListItem
 import com.example.financialapp.core.converter.toEmoji
 import com.example.financialapp.core.converter.toFormat
-import com.example.financialapp.feature_transactions.presentation.income.today.IncomeState
+import com.example.financialapp.feature_transactions.presentation.income.today.viewmodel.IncomeState
 
 @Composable
 fun IncomeView(

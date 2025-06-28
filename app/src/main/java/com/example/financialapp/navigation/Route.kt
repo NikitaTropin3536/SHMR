@@ -2,6 +2,10 @@ package com.example.financialapp.navigation
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Интерфейс для всех вложенных навигаций
+ * */
+
 sealed interface Route {
 
     @Serializable

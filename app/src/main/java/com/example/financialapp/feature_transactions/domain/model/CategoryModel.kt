@@ -2,6 +2,10 @@ package com.example.financialapp.feature_transactions.domain.model
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Модель статей
+ * */
+
 @Serializable
 data class CategoryModel (
     val id: Int,

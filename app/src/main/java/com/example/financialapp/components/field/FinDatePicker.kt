@@ -1,5 +1,6 @@
 package com.example.financialapp.components.field
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -15,12 +16,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.example.financialapp.components.item.FinListItem
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.util.Calendar
+import com.example.financialapp.core.converter.convertDateToMillis
+import com.example.financialapp.core.converter.convertMillisToDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,12 +32,48 @@ fun FinDatePicker(
     onChangeDate: (String) -> Unit
 ) {
 
+//    TODO ставить выбранную дату
+
     var showDialog by remember { mutableStateOf(false) }
     val selectedDateLabel = remember { mutableStateOf(previousValue) }
     val datePickerState = rememberDatePickerState(
         initialDisplayMode = DisplayMode.Picker,
-        initialSelectedDateMillis = Calendar.getInstance().timeInMillis
+        initialSelectedDateMillis = convertDateToMillis(previousValue)
     )
+
+    val pickerColors = DatePickerDefaults.colors(
+        selectedDayContainerColor = MaterialTheme
+            .colorScheme.primary,
+        selectedYearContainerColor = MaterialTheme
+            .colorScheme.primary,
+        todayDateBorderColor = MaterialTheme
+            .colorScheme.primary,
+
+        containerColor = MaterialTheme
+            .colorScheme.surfaceContainerLow,
+
+        todayContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        dayContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        selectedYearContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        selectedDayContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        yearContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        weekdayContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        titleContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        headlineContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        subheadContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+        dayInSelectionRangeContentColor = MaterialTheme
+            .colorScheme.inverseSurface,
+    )
+
 
     if (showDialog) {
         DatePickerDialog(
@@ -45,27 +81,28 @@ fun FinDatePicker(
                 usePlatformDefaultWidth = false,
                 decorFitsSystemWindows = false
             ),
-
+            shape = RoundedCornerShape(15.dp),
+            tonalElevation = 0.dp,
             onDismissRequest = {
                 showDialog = false
             },
-
+            colors = pickerColors,
             confirmButton = {
                 TextButton(
                     onClick = {
                         showDialog = false
+
                         onChangeDate(selectedDateLabel.value)
                     }
                 ) {
                     Text("OK")
 
-                    selectedDateLabel.value = convertMillisToDate(
-                        datePickerState.selectedDateMillis
-                            ?: selectedDateLabel.value.toLong()
-                    )
+                    selectedDateLabel.value =
+                        convertMillisToDate(
+                            datePickerState.selectedDateMillis ?: selectedDateLabel.value.toLong()
+                        )
                 }
             },
-
             dismissButton = {
                 TextButton(
                     onClick = {
@@ -75,44 +112,14 @@ fun FinDatePicker(
                     Text("Cancel")
                 }
             }
-
         ) {
             DatePicker(
                 state = datePickerState,
-                colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = MaterialTheme
-                        .colorScheme.primary,
-                    selectedYearContainerColor = MaterialTheme
-                        .colorScheme.primary,
-                    todayDateBorderColor = MaterialTheme
-                        .colorScheme.primary,
-
-                    containerColor = MaterialTheme
-                        .colorScheme.surfaceContainerLow,
-
-                    todayContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    dayContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    selectedYearContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    selectedDayContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    yearContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    weekdayContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    titleContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    headlineContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    subheadContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                    dayInSelectionRangeContentColor = MaterialTheme
-                        .colorScheme.inverseSurface,
-                )
+                colors = pickerColors,
+                title = null,
+                headline = null,
+                showModeToggle = false
             )
-
         }
     }
 
@@ -125,15 +132,4 @@ fun FinDatePicker(
     ) {
         showDialog = true
     }
-
-}
-
-fun convertMillisToDate(
-    millis: Long
-): String {
-    val localDate = Instant.ofEpochMilli(millis)
-        .atZone(ZoneId.systemDefault()) // Использует часовой пояс устройства
-        .toLocalDate()
-
-    return localDate.format(DateTimeFormatter.ISO_DATE)
 }

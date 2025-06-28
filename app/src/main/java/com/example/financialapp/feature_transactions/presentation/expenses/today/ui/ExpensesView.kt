@@ -12,7 +12,7 @@ import com.example.financialapp.R
 import com.example.financialapp.components.item.FinListItem
 import com.example.financialapp.core.converter.toEmoji
 import com.example.financialapp.core.converter.toFormat
-import com.example.financialapp.feature_transactions.presentation.expenses.today.ExpensesState
+import com.example.financialapp.feature_transactions.presentation.expenses.today.viewmodel.ExpensesState
 
 @Composable
 fun ExpensesView(
