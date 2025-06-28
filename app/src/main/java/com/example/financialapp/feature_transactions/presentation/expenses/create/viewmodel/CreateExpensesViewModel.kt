@@ -1,0 +1,215 @@
+package com.example.financialapp.feature_transactions.presentation.expenses.create.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.financialapp.core.error.ApiException
+import com.example.financialapp.core.error.ErrorHandler
+import com.example.financialapp.feature_articles.domain.usecase.GetArticlesUseCase
+import com.example.financialapp.feature_transactions.data.dto.TransactionDto
+import com.example.financialapp.feature_transactions.domain.usecase.GetAccountUseCase
+import com.example.financialapp.feature_transactions.domain.usecase.PostTransactionUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+/**
+ * VM экрана добавления расходов
+ * */
+
+class CreateExpensesViewModel(
+    private val accountUseCase: GetAccountUseCase,
+    private val articlesUseCase: GetArticlesUseCase,
+    private val createTransactionUseCase: PostTransactionUseCase
+) : ViewModel() {
+
+    private val _state = MutableStateFlow(CreateExpensesState())
+    val state = _state.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
+        _state.value
+    )
+
+    private val _action = MutableSharedFlow<CreateExpensesAction>()
+    val action = _action.asSharedFlow()
+
+    fun onEvent(
+        event: CreateExpensesEvent
+    ) {
+        when (event) {
+            is CreateExpensesEvent.OnChoseArticle -> {
+                _state.update {
+                    it.copy(
+                        article = event.article
+                    )
+                }
+            }
+
+            is CreateExpensesEvent.OnEnterComment -> {
+                _state.update {
+                    it.copy(
+                        comment = event.comment
+                    )
+                }
+            }
+
+            is CreateExpensesEvent.OnEnterDate -> {
+                _state.update {
+                    it.copy(
+                        date = event.date
+                    )
+                }
+            }
+
+            is CreateExpensesEvent.OnEnterSum -> {
+                _state.update {
+                    it.copy(
+                        sum = event.sum
+                    )
+                }
+            }
+
+            is CreateExpensesEvent.OnEnterTime -> {
+                _state.update {
+                    it.copy(
+                        time = event.time
+                    )
+                }
+            }
+
+            CreateExpensesEvent.OnLoadData -> {
+                loadAccount {
+                    loadArticles()
+                }
+            }
+
+            CreateExpensesEvent.OnSave -> {
+                saveExpenses()
+            }
+
+        }
+    }
+
+    private fun loadAccount(
+        onSuccess: (Int) -> Unit
+    ) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            val result = accountUseCase.invoke()
+
+            result
+                .onSuccess { res ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            accounts = res
+                        )
+                    }
+
+                    onSuccess(res[0].id)
+                }
+                .onFailure { err ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                        )
+                    }
+
+                    _action.emit(
+                        CreateExpensesAction.ShowSnackBar(
+                            ErrorHandler().handleException(
+                                err
+                            )
+                        )
+                    )
+                }
+
+        }
+    }
+
+    private fun loadArticles() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            val result = articlesUseCase.invoke()
+
+            result
+                .onSuccess { res ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            articles = res.filter { !it.isIncome }
+                        )
+                    }
+                }
+                .onFailure { err ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                        )
+                    }
+
+                    _action.emit(
+                        CreateExpensesAction.ShowSnackBar(
+                            ErrorHandler().handleException(
+                                err
+                            )
+                        )
+                    )
+                }
+        }
+    }
+
+    private fun saveExpenses() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
+            try {
+                val result = createTransactionUseCase.invoke(
+                    TransactionDto(
+                        accountId = state.value.accounts[0].id,
+                        categoryId = state.value.article?.id
+                            ?: throw ApiException("Заполните все поля"),
+                        amount = state.value.sum ?: throw ApiException("Заполните все поля"),
+                        transactionDate = "${state.value.date}T${state.value.time}:00.000Z",
+                        comment = state.value.comment
+                    )
+                )
+
+                result
+                    .onSuccess { res ->
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                            )
+                        }
+
+                        _action.emit(CreateExpensesAction.ShowSnackBar("Расход был добавлен"))
+                    }
+                    .onFailure { err ->
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                            )
+                        }
+
+                        _action.emit(
+                            CreateExpensesAction.ShowSnackBar(
+                                ErrorHandler().handleException(
+                                    err
+                                )
+                            )
+                        )
+                    }
+
+            } catch (e: Exception) {
+                _action.emit(CreateExpensesAction.ShowSnackBar(ErrorHandler().handleException(e)))
+            }
+
+        }
+    }
+}

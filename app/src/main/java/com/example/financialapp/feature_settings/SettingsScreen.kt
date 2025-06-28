@@ -7,23 +7,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.financialapp.components.BottomBar
-import com.example.financialapp.components.TopBar
+import com.example.financialapp.components.nav.BottomBar
+import com.example.financialapp.components.nav.TopBar
 
 @Composable
 fun SettingsScreen(
     navController: NavController
 ) {
     Scaffold(
-
         bottomBar = {
-            BottomBar(navController = navController)
+            BottomBar(
+                navController = navController
+            )
         },
 
         topBar = {
             TopBar(
                 title = "Настройки",
-                icon = { }
+                actions = { }
             )
         },
 
@@ -31,12 +32,10 @@ fun SettingsScreen(
             .fillMaxSize(),
         containerColor = MaterialTheme
             .colorScheme.onSurface,
-
-        ) { padding ->
+    ) { padding ->
 
         SettingsView(
-            modifier = Modifier
-                .padding(padding)
+            modifier = Modifier.padding(padding)
         )
 
     }

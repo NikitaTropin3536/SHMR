@@ -2,6 +2,10 @@ package com.example.financialapp.navigation
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Интерфейс для всех вложенных навигаций
+ * */
+
 sealed interface Route {
 
     @Serializable
@@ -14,7 +18,16 @@ sealed interface Route {
     data object TodayExpenses : Route
 
     @Serializable
+    data object CreateExpenses : Route
+
+    @Serializable
+    data object HistoryExpenses : Route
+
+    @Serializable
     data object Income : Route
+
+    @Serializable
+    data object HistoryIncomes : Route
 
     @Serializable
     data object TodayIncome : Route
@@ -36,4 +49,5 @@ sealed interface Route {
 
     @Serializable
     data object AllSettings : Route
+
 }
