@@ -46,6 +46,7 @@ private val LightColorScheme = lightColorScheme(
     onSecondary = Color(0xFFE9E5EC),
     tertiaryContainer = Color(0xFFE46962),
 )
+
 @Composable
 fun FinancialAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

@@ -1,10 +1,13 @@
-package com.example.financialapp.feature_bill.presentation.viewmodel
+package com.example.financialapp.feature_bill.presentation.current.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.financialapp.core.error.ErrorHandler
 import com.example.financialapp.core.network.FinResult
+import com.example.financialapp.feature_bill.data.model.UpdateAccountDto
+import com.example.financialapp.feature_bill.domain.model.AccountBriefModel
 import com.example.financialapp.feature_bill.domain.usecase.GetBillInfoUseCase
+import com.example.financialapp.feature_bill.domain.usecase.UpdateBillUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +21,8 @@ import kotlinx.coroutines.launch
  * */
 
 class BillViewModel(
-    private val accountUseCase: GetBillInfoUseCase
+    private val billInfoUseCase : GetBillInfoUseCase,
+    private val updateBillUseCase : UpdateBillUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BillState())
@@ -49,7 +53,7 @@ class BillViewModel(
                 )
             }
 
-            val result = accountUseCase.invoke()
+            val result = billInfoUseCase.invoke()
 
             result.onSuccess { res ->
                 if (res.isNotEmpty()) {
@@ -79,4 +83,42 @@ class BillViewModel(
             }
         }
     }
+
+    private fun updateBill(
+        accDto : UpdateAccountDto
+    ) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    status = FinResult.Loading
+                )
+            }
+
+            val result = updateBillUseCase.invoke(
+                id = state.value.accounts[0].id,
+                newBill = accDto
+            )
+
+            result.onSuccess { res ->
+                _state.update {
+                    it.copy(
+                        accounts = listOf<AccountBriefModel>(res),
+                        status = FinResult.Success
+                    )
+                }
+
+                _action.emit(BillAction.ShowSnackBar("Валюта успешно обновлена"))
+
+            }.onFailure { err ->
+                _state.update {
+                    it.copy(
+                        status = FinResult.Error
+                    )
+                }
+
+                _action.emit(BillAction.ShowSnackBar(ErrorHandler().handleException(err)))
+            }
+        }
+    }
+
 }

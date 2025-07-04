@@ -14,6 +14,7 @@ import com.example.financialapp.components.nav.TopBar
 fun SettingsScreen(
     navController: NavController
 ) {
+
     Scaffold(
         bottomBar = {
             BottomBar(
@@ -32,11 +33,13 @@ fun SettingsScreen(
             .fillMaxSize(),
         containerColor = MaterialTheme
             .colorScheme.onSurface,
-    ) { padding ->
+
+        ) { padding ->
 
         SettingsView(
             modifier = Modifier.padding(padding)
         )
 
     }
+
 }

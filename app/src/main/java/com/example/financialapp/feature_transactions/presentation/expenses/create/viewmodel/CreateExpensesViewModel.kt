@@ -101,17 +101,16 @@ class CreateExpensesViewModel(
 
             val result = accountUseCase.invoke()
 
-            result
-                .onSuccess { res ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            accounts = res
-                        )
-                    }
-
-                    onSuccess(res[0].id)
+            result.onSuccess { res ->
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        accounts = res
+                    )
                 }
+
+                onSuccess(res[0].id)
+            }
                 .onFailure { err ->
                     _state.update {
                         it.copy(
@@ -121,9 +120,7 @@ class CreateExpensesViewModel(
 
                     _action.emit(
                         CreateExpensesAction.ShowSnackBar(
-                            ErrorHandler().handleException(
-                                err
-                            )
+                            ErrorHandler().handleException(err)
                         )
                     )
                 }

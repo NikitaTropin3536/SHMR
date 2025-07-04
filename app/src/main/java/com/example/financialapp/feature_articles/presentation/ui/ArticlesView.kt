@@ -35,8 +35,8 @@ fun ArticlesView(
             )
     ) {
         FinEditText(
-            label = stringResource(R.string.find_article),
             previousData = "",
+            label = stringResource(R.string.find_article),
             onTrailingIconClick = {
                 onEvent(
                     ArticlesEvent.OnSearchValueChanged(
