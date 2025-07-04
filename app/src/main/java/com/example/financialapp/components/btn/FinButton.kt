@@ -23,6 +23,7 @@ fun FinButton(
         .colorScheme.tertiaryContainer,
     onClick: () -> Unit,
 ) {
+
     Button(
         modifier = modifier
             .fillMaxWidth()
@@ -43,6 +44,8 @@ fun FinButton(
                 color = White,
             )
         },
+
         onClick = onClick
     )
+
 }

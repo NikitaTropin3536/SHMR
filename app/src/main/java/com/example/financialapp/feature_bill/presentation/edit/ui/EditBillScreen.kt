@@ -1,11 +1,7 @@
-package com.example.financialapp.feature_bill.presentation.ui
+package com.example.financialapp.feature_bill.presentation.edit.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -17,92 +13,79 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.financialapp.R
 import com.example.financialapp.components.item.FinLoadingBar
+import com.example.financialapp.components.item.FinSnackBar
 import com.example.financialapp.components.nav.BottomBar
 import com.example.financialapp.components.nav.TopBar
 import com.example.financialapp.core.network.FinResult
-import com.example.financialapp.feature_bill.presentation.viewmodel.BillAction
-import com.example.financialapp.feature_bill.presentation.viewmodel.BillEvent
-import com.example.financialapp.feature_bill.presentation.viewmodel.BillViewModel
+import com.example.financialapp.feature_bill.presentation.edit.viewmodel.EditBillAction
+import com.example.financialapp.feature_bill.presentation.edit.viewmodel.EditBillEvent
+import com.example.financialapp.feature_bill.presentation.edit.viewmodel.EditBillViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun AccountScreen(
+fun EditBillScreen (
     navController: NavController,
-    viewModel: BillViewModel = koinViewModel<BillViewModel>()
+    viewModel: EditBillViewModel = koinViewModel<EditBillViewModel>()
 ) {
-
     val state by viewModel.state.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
 
-
     LaunchedEffect(Unit) {
-        viewModel.onEvent(BillEvent.OnLoadBill)
+        viewModel.onEvent(EditBillEvent.OnLoadBill)
 
         viewModel.action.collectLatest { action ->
             when (action) {
-                is BillAction.ShowSnackBar -> {
+                is EditBillAction.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(action.message)
                 }
             }
         }
     }
 
-    Scaffold(
+    Scaffold (
         bottomBar = {
             BottomBar(
                 navController = navController
             )
         },
-
         topBar = {
             TopBar(
-                title = stringResource(R.string.my_bill),
-
+                title = "Мой счет",
                 actions = {
                     IconButton(
-                        onClick = { /* TODO */ }
+                        onClick = {
+                            viewModel.onEvent(EditBillEvent.OnSaveBill)
+                        }
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_edit),
-                            contentDescription = "изменить",
+                            painter = painterResource(R.drawable.ic_check),
+                            contentDescription = "Сохранить",
+                            tint = MaterialTheme.colorScheme.surfaceContainer
+                        )
+                    }
+                },
+                navIcon = {
+                    IconButton(
+                        onClick = { navController.popBackStack() }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_cross),
+                            contentDescription = "Назад",
                             tint = MaterialTheme.colorScheme.surfaceContainer
                         )
                     }
                 }
-
             )
         },
-
         modifier = Modifier
             .fillMaxSize(),
-        containerColor = MaterialTheme
-            .colorScheme.onSurface,
-
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { /* TODO */ },
-                shape = CircleShape,
-                containerColor = MaterialTheme.colorScheme.primary
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_plus),
-                    contentDescription = "add button",
-                    modifier = Modifier
-                        .size(16.dp),
-                    tint = Color.White
-                )
-            }
-        },
-
-        floatingActionButtonPosition = FabPosition.End
+        containerColor = MaterialTheme.colorScheme.onSurface,
+        snackbarHost = { FinSnackBar(snackBarHostState) }
     ) { padding ->
 
         if (state.status != FinResult.Success) {
@@ -111,10 +94,12 @@ fun AccountScreen(
                     .padding(padding)
             )
         } else {
-            AccountView(
+            EditBillView(
                 modifier = Modifier.padding(padding),
                 state = state
-            )
+            ) {
+                viewModel.onEvent(it)
+            }
         }
 
     }

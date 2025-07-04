@@ -11,6 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.financialapp.navigation.Bar
 
@@ -34,29 +35,43 @@ fun BottomBar(
             NavigationBarItem(
                 selected = isSelected,
 
+//                colors = NavigationBarItemDefaults.colors(
+//                    indicatorColor = MaterialTheme.colorScheme.outline
+//                ),
+
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.outline
+                    selectedIconColor = MaterialTheme.colorScheme.surfaceTint,
+                    unselectedIconColor = MaterialTheme.colorScheme.surfaceContainer,
+                    indicatorColor = MaterialTheme.colorScheme.outline,
                 ),
 
                 onClick = {
-                    navController.navigate(bar.route)
+                    navController.navigate(bar.route) {
+                        // Очищаем предыдущий экран перед переходом
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            inclusive = true   // Включаем удаление предыдущего экрана
+                            saveState = true   // Сохраняем состояние предыдущего экрана
+                        }
+                        launchSingleTop = true // Переход заменяет верхний экран
+                        restoreState = true    // Восстанавливаем состояние нового экрана
+                    }
                 },
 
                 icon = {
                     Icon(
                         painter = painterResource(id = bar.icon),
                         contentDescription = bar.title, // Описание иконки
-                        tint = if (isSelected) MaterialTheme.colorScheme.surfaceTint
-                        else MaterialTheme.colorScheme.inverseOnSurface
+/*                        tint = if (isSelected) MaterialTheme.colorScheme.surfaceTint
+                        else MaterialTheme.colorScheme.inverseOnSurface*/
                     )
                 },
 
                 label = {
                     Text(
                         text = bar.title,
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                        fontWeight = if (isSelected) FontWeight(600)
-                        else FontWeight(500),
+                        color = MaterialTheme.colorScheme.surfaceContainer,
+                        fontWeight = if (isSelected) FontWeight.ExtraBold
+                        else FontWeight.Medium,
                         fontSize = 12.sp,
                         lineHeight = 16.sp,
                         letterSpacing = 0.5.sp

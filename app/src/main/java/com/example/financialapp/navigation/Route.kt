@@ -33,10 +33,13 @@ sealed interface Route {
     data object TodayIncome : Route
 
     @Serializable
-    data object Account : Route
+    data object Bill : Route
 
     @Serializable
-    data object CurrentAccount : Route
+    data object CurrentBill : Route
+
+    @Serializable
+    data object EditBill : Route
 
     @Serializable
     data object Articles : Route

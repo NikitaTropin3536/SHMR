@@ -25,10 +25,10 @@ sealed class Bar (
         route = Route.Income,
     )
 
-    data object Account : Bar(
+    data object Bill : Bar(
         title = "Счёт",
-        icon = R.drawable.ic_account,
-        route = Route.Account,
+        icon = R.drawable.ic_bill,
+        route = Route.Bill,
     )
 
     data object Articles : Bar(
@@ -45,7 +45,7 @@ sealed class Bar (
 
     companion object {
         val items = listOf(Expenses, Income,
-            Account, Articles, Settings)
+            Bill, Articles, Settings)
     }
 
 }

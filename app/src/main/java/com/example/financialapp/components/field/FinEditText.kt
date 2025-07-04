@@ -28,8 +28,9 @@ fun FinEditText(
     previousData: String,
     label: String,
     isShowTrailingIcon: Boolean = true,
-    backgroundColor: Color = MaterialTheme
-        .colorScheme.primaryContainer,
+    isShowLeadingIcon: Boolean = false,
+    backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
+    leadingIcon: Int = R.drawable.ic_bill,
     onTrailingIconClick: (String) -> Unit = { },
     onTextChanged: (String) -> Unit,
 ) {
@@ -62,10 +63,8 @@ fun FinEditText(
         shape = RectangleShape,
         singleLine = true,
         modifier = Modifier
-//                .fillMaxSize()
             .fillMaxWidth()
-            .height(56.dp)
-        /*.padding(4.dp)*/,
+            .height(56.dp),
 
         colors = TextFieldDefaults.colors(
             focusedTextColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -84,6 +83,16 @@ fun FinEditText(
                         .clickable {
                             onTrailingIconClick(textValue)
                         }
+                )
+            }
+        },
+
+        leadingIcon = {
+            if (isShowLeadingIcon) {
+                Icon(
+                    painter = painterResource(id = leadingIcon),
+                    contentDescription = "Leading Icon",
+                    tint = MaterialTheme.colorScheme.inverseSurface
                 )
             }
         }

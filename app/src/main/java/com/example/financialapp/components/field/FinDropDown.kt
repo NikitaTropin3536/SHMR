@@ -40,6 +40,7 @@ fun FinDropDown(
             expanded = !expanded
         },
     ) {
+
         FinListItem(
             title = title,
             trailingText = textValue,
@@ -77,6 +78,7 @@ fun FinDropDown(
             }
 
         }
+
     }
 
 }

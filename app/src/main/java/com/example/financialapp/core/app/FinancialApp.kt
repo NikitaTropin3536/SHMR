@@ -9,8 +9,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.example.financialapp.feature_bill.presentation.ui.AccountScreen
 import com.example.financialapp.feature_articles.presentation.ui.ArticlesScreen
+import com.example.financialapp.feature_bill.presentation.current.ui.BillScreen
+import com.example.financialapp.feature_bill.presentation.edit.ui.EditBillScreen
 import com.example.financialapp.feature_settings.SettingsScreen
 import com.example.financialapp.feature_transactions.presentation.expenses.create.ui.CreateExpensesScreen
 import com.example.financialapp.feature_transactions.presentation.expenses.history.ui.HistoryExpensesScreen
@@ -76,14 +77,21 @@ fun FinancialApp() {
                 }
             }
 
-            navigation<Route.Account>(
-                startDestination = Route.CurrentAccount
+            navigation<Route.Bill>(
+                startDestination = Route.CurrentBill
             ) {
-                composable<Route.CurrentAccount> {
-                    AccountScreen(
+                composable<Route.CurrentBill> {
+                    BillScreen(
                         navController = navController
                     )
                 }
+
+                composable<Route.EditBill> {
+                    EditBillScreen(
+                        navController = navController
+                    )
+                }
+
             }
 
             navigation<Route.Articles>(

@@ -1,4 +1,4 @@
-package com.example.financialapp.feature_bill.presentation.ui
+package com.example.financialapp.feature_bill.presentation.current.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,12 +10,14 @@ import androidx.compose.ui.res.stringResource
 import com.example.financialapp.R
 import com.example.financialapp.components.item.FinListItem
 import com.example.financialapp.core.converter.toEmoji
-import com.example.financialapp.feature_bill.presentation.viewmodel.BillState
+import com.example.financialapp.feature_bill.presentation.current.viewmodel.BillEvent
+import com.example.financialapp.feature_bill.presentation.current.viewmodel.BillState
 
 @Composable
-fun AccountView(
+fun BillView(
     modifier: Modifier = Modifier,
-    state: BillState
+    state: BillState,
+    onEvent: (BillEvent) -> Unit
 ) {
     Column(
         modifier = modifier

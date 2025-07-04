@@ -1,4 +1,4 @@
-package com.example.financialapp.feature_bill.presentation.viewmodel
+package com.example.financialapp.feature_bill.presentation.current.viewmodel
 
 /**
  * События экрана счетов
