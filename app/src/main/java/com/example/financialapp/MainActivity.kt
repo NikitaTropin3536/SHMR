@@ -11,7 +11,7 @@ import com.example.financialapp.navigation.FinancilityApp
  * устанавливает навигацию и ui
  * */
 
-class аMainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
