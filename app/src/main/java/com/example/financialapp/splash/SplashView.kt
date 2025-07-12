@@ -15,10 +15,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
 fun SplashView () {
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.Asset("anim.json")
-    )
-
+    val composition by rememberLottieComposition(LottieCompositionSpec.Asset("splash.json"))
     val progress by animateLottieCompositionAsState(
         composition = composition,
         iterations = LottieConstants.IterateForever,
@@ -31,7 +28,9 @@ fun SplashView () {
     ) {
         LottieAnimation(
             composition = composition,
-            progress = progress,
+            progress = {
+                progress
+            },
             modifier = Modifier
                 .fillMaxSize()
         )

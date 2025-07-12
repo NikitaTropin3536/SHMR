@@ -1,18 +1,10 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
     alias(libs.plugins.kotlin.compose)
-
     alias(libs.plugins.jetbrains.kotlin.serialization)
-}
-
-val localProperties = Properties().apply {
-    val localPropsFile = rootProject.file("local.properties")
-    if (localPropsFile.exists()) {
-        load(localPropsFile.inputStream())
-    }
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -26,18 +18,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField(
-            type = "String",
-            name = "BASE_URL",
-            value = "\"${localProperties["BASE_URL"]}\""
-        )
-
-        buildConfigField(
-            type = "String",
-            name = "API_KEY",
-            value = "\"${localProperties["API_KEY"]}\""
-        )
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -50,34 +30,29 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
     kotlinOptions {
         jvmTarget = "11"
     }
-
     buildFeatures {
         compose = true
-//        to enable custom BuildConfig fields
-        buildConfig = true
     }
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
 
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.jetbrains.compose.navigation)
 
     implementation(libs.lottie.compose)
@@ -90,12 +65,27 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // network
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.negotiation)
     implementation(libs.ktor.json)
     implementation(libs.ktor.client.logging)
 
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.compose)
+    // DI
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
+
+    // serialization
+    implementation(libs.kotlinx.serialization.json)
+    implementation(project(":feature_articles"))
+
+    // modules
+    implementation(project(":feature_bill"))
+    implementation(project(":feature_transations"))
+    implementation(project(":feature_settings"))
+
+    implementation(project(":core"))
+    implementation(project(":common_ui"))
+
 }
