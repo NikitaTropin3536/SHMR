@@ -7,30 +7,17 @@ import com.example.core.error.ApiException
 import com.example.core.network.ktorClient
 import com.example.core.network.safeCall
 import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
+import jakarta.inject.Inject
 
 /**
- * Репозиторий для получения счетов
+ * Репозиторий для обновления счетов
  * */
 
-class BillRepositoryImpl : BillRepository {
-
-    override suspend fun getBillInfo(): Result<List<AccountBriefModel>> {
-        return safeCall {
-
-            val response: HttpResponse = ktorClient.get("accounts")
-
-            if (response.status != HttpStatusCode.OK) {
-                throw ApiException("Ошибка API: ${response.status}")
-            }
-
-            response.body()
-        }
-    }
+class BillRepositoryImpl @Inject constructor() : BillRepository {
 
     override suspend fun updateBill(
         id: Int,
@@ -46,7 +33,7 @@ class BillRepositoryImpl : BillRepository {
                 throw ApiException("Ошибка API: ${response.status}")
             }
 
-            response.body()
+            return@safeCall response.body()
 
         }
     }

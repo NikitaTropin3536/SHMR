@@ -13,8 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.articles.presentation.viewmodel.ArticlesEvent
 import com.example.articles.presentation.viewmodel.ArticlesState
-import com.example.common.ui.field.FinEditText
-import com.example.common.ui.item.FinListItem
+import com.example.common.ui.field.FinancilityEditText
+import com.example.common.ui.item.FinancilityListItem
+import com.example.common.ui.item.FinancilitySyncMessage
 
 @Composable
 fun ArticlesView (
@@ -32,7 +33,12 @@ fun ArticlesView (
                 state = scrollState,
             )
     ){
-        FinEditText(
+
+        state.lastSync?.let {
+            FinancilitySyncMessage(it)
+        }
+
+        FinancilityEditText(
             previousData = "",
             label = "Найти статью",
             isShowLeadingIcon = false,
@@ -56,7 +62,7 @@ fun ArticlesView (
         state.articles
             .filter { it.name.contains(state.searchValue) }
             .forEach {
-                FinListItem(
+                FinancilityListItem(
                     emoji = it.emoji,
                     title = it.name,
                     height = 70.dp,

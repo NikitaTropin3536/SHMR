@@ -3,8 +3,12 @@ package com.example.bill.presentation.current.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bill.domain.usecase.GetBillInfoUseCase
+import com.example.common.constants.Constants.BILL_SYNC
+import com.example.common.core.model.AccountBriefModel
 import com.example.core.error.ErrorHandler
-import com.example.core.network.FinResult
+import com.example.core.error.OfflineDataException
+import com.example.core.network.FinancilityResult
+import com.example.storage.data.sync.AppSyncStorage
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +24,7 @@ import kotlinx.coroutines.launch
 
 class BillViewModel @Inject constructor(
     private val billInfoUseCase : GetBillInfoUseCase,
+    private val appSyncStorage: AppSyncStorage
 ): ViewModel() {
 
     private val _state = MutableStateFlow(BillState())
@@ -44,11 +49,10 @@ class BillViewModel @Inject constructor(
 
     private fun loadData() {
         viewModelScope.launch {
-            _action.emit(BillAction.ShowSnackBar("..."))
 
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
 
@@ -59,26 +63,38 @@ class BillViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             accounts = res,
-                            status = FinResult.Success
+                            status = FinancilityResult.Success
                         )
                     }
                 } else {
                     _state.update {
                         it.copy(
-                            status = FinResult.Error
+                            status = FinancilityResult.Error
                         )
                     }
 
                     _action.emit(BillAction.ShowSnackBar("Не удалось найти аккаунт"))
                 }
             }.onFailure { err ->
-                _state.update {
-                    it.copy(
-                        status = FinResult.Error
-                    )
+
+                if (err is OfflineDataException) {
+                    _state.update {
+                        it.copy(
+                            status = FinancilityResult.Success,
+                            accounts = err.data as List<AccountBriefModel>,
+                            lastSync = appSyncStorage.getSyncTime(
+                                feature = BILL_SYNC,
+                            )
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(status = FinancilityResult.Error)
+                    }
+
+                    _action.emit(BillAction.ShowSnackBar(ErrorHandler().handleException(err)))
                 }
 
-                _action.emit(BillAction.ShowSnackBar(ErrorHandler().handleException(err)))
             }
         }
     }

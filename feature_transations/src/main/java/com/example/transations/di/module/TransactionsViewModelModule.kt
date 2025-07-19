@@ -5,6 +5,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
 import com.example.core.di.utils.ViewModelKey
+import com.example.transations.presentation.analysis.viewmodel.AnalysisViewModel
 import com.example.transations.presentation.create.viewmodel.CreateTransactionViewModel
 import com.example.transations.presentation.detail.viewmodel.UpdateTransactionViewModel
 import com.example.transations.presentation.expenses.history.viewmodel.HistoryExpensesViewModel
@@ -18,6 +19,7 @@ import com.example.transations.presentation.income.today.viewmodel.IncomeViewMod
 
 @Module
 interface TransactionsViewModelModule {
+
     @Binds
     @IntoMap
     @ViewModelKey(ExpensesViewModel::class)
@@ -48,5 +50,10 @@ interface TransactionsViewModelModule {
     @IntoMap
     @ViewModelKey(UpdateTransactionViewModel::class)
     fun bindUpdateTransactionViewModel(viewModel: UpdateTransactionViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AnalysisViewModel::class)
+    fun bindAnalysisViewModel(viewModel: AnalysisViewModel): ViewModel
 
 }

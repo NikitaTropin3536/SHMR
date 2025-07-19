@@ -2,10 +2,14 @@ package com.example.transations.presentation.detail.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.common.constants.Constants.TRANSACTION_SYNC
+import com.example.common.core.model.CategoryModel
 import com.example.core.error.ApiException
 import com.example.core.error.ErrorHandler
-import com.example.core.network.FinResult
-import com.example.transations.data.dto.TransactionDto
+import com.example.core.error.OfflineDataException
+import com.example.core.network.FinancilityResult
+import com.example.storage.data.sync.AppSyncStorage
+import com.example.transations.data.dto.RequestTransactionDto
 import com.example.transations.domain.usecase.DeleteTransactionUseCase
 import com.example.transations.domain.usecase.GetArticlesUseCase
 import com.example.transations.domain.usecase.UpdateTransactionUseCase
@@ -26,6 +30,7 @@ class UpdateTransactionViewModel @Inject constructor (
     private val articlesUseCase : GetArticlesUseCase,
     private val updateUseCase : UpdateTransactionUseCase,
     private val deleteUseCase : DeleteTransactionUseCase,
+    private val appSyncStorage: AppSyncStorage
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UpdateTransactionState())
@@ -107,13 +112,13 @@ class UpdateTransactionViewModel @Inject constructor (
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
 
             val result = updateUseCase.invoke(
                 id = state.value.id,
-                transaction = TransactionDto(
+                transaction = RequestTransactionDto(
                     accountId = state.value.accounts[0].id,
                     categoryId = state.value.article?.id ?: throw ApiException("Заполните все поля"),
                     amount = state.value.sum ?: throw ApiException("Заполните все поля"),
@@ -126,7 +131,7 @@ class UpdateTransactionViewModel @Inject constructor (
                 .onSuccess { res ->
                     _state.update {
                         it.copy(
-                            status = FinResult.Success
+                            status = FinancilityResult.Success
                         )
                     }
 
@@ -135,7 +140,7 @@ class UpdateTransactionViewModel @Inject constructor (
                 .onFailure { err ->
                     _state.update {
                         it.copy(
-                            status = FinResult.Error
+                            status = FinancilityResult.Error
                         )
                     }
 
@@ -151,7 +156,7 @@ class UpdateTransactionViewModel @Inject constructor (
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
 
@@ -162,18 +167,31 @@ class UpdateTransactionViewModel @Inject constructor (
                     _state.update {
                         it.copy(
                             articles = res.filter { it.isIncome == isIncome },
-                            status = FinResult.Success
+                            status = FinancilityResult.Success
                         )
                     }
                 }
                 .onFailure { err ->
-                    _state.update {
-                        it.copy(
-                            status = FinResult.Error
-                        )
+                    if (err is OfflineDataException) {
+                        val articles = err.data as List<CategoryModel>
+
+                        _state.update {
+                            it.copy(
+                                status = FinancilityResult.Success,
+                                articles = articles.filter { it.isIncome == isIncome },
+                                lastSync = appSyncStorage.getSyncTime(
+                                    feature = TRANSACTION_SYNC,
+                                )
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(status = FinancilityResult.Error)
+                        }
+
+                        _action.emit(UpdateTransactionAction.ShowSnackBar(ErrorHandler().handleException(err)))
                     }
 
-                    _action.emit(UpdateTransactionAction.ShowSnackBar(ErrorHandler().handleException(err)))
                 }
         }
     }
@@ -182,7 +200,7 @@ class UpdateTransactionViewModel @Inject constructor (
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
 
@@ -194,7 +212,7 @@ class UpdateTransactionViewModel @Inject constructor (
                 .onSuccess { res ->
                     _state.update {
                         it.copy(
-                            status = FinResult.Success
+                            status = FinancilityResult.Success
                         )
                     }
 
@@ -203,7 +221,7 @@ class UpdateTransactionViewModel @Inject constructor (
                 .onFailure { err ->
                     _state.update {
                         it.copy(
-                            status = FinResult.Error
+                            status = FinancilityResult.Error
                         )
                     }
 

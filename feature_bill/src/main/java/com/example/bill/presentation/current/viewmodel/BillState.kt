@@ -2,7 +2,7 @@ package com.example.bill.presentation.current.viewmodel
 
 import com.example.common.core.model.AccountBriefModel
 import com.example.common.core.model.CurrencyOption
-import com.example.core.network.FinResult
+import com.example.core.network.FinancilityResult
 
 /**
  * Состояние экрана счетов
@@ -10,6 +10,7 @@ import com.example.core.network.FinResult
 
 data class BillState (
     val accounts : List<AccountBriefModel> = emptyList(),
-    val status: FinResult = FinResult.Loading,
+    val status: FinancilityResult = FinancilityResult.Loading,
     val chosenCurrency: CurrencyOption? = null,
+    val lastSync: Long? = null,
 )

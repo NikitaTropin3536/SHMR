@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.financialapp"
+    namespace = "com.example.financility"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.financialapp"
+        applicationId = "com.example.financility"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -55,8 +55,6 @@ dependencies {
 
     implementation(libs.jetbrains.compose.navigation)
 
-    implementation(libs.lottie.compose)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -65,12 +63,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // network
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.negotiation)
-    implementation(libs.ktor.json)
-    implementation(libs.ktor.client.logging)
+    // worker
+    implementation(libs.androidx.work.runtime.ktx)
 
     // DI
     implementation(libs.dagger)
@@ -84,8 +78,20 @@ dependencies {
     implementation(project(":feature_bill"))
     implementation(project(":feature_transations"))
     implementation(project(":feature_settings"))
+    implementation(project(":feature_splash"))
+
+    // db
+    implementation(project(":storage"))
 
     implementation(project(":core"))
-    implementation(project(":common_ui"))
+
+    // common-components
+    implementation(project(":common"))
+
+    // to get articles
+    implementation(project(":articles"))
+
+    // to get account
+    implementation(project(":account"))
 
 }

@@ -7,6 +7,7 @@ import com.example.bill.di.modules.BillUseCaseModule
 import com.example.bill.di.modules.BillViewModelModule
 import com.example.core.di.CoreComponent
 import com.example.core.di.modules.SharedViewModelModule
+import com.example.storage.di.DatabaseComponent
 
 /**
  * Компонент, который хранит в себе VM, репозитории и use-case фичи счета
@@ -14,7 +15,10 @@ import com.example.core.di.modules.SharedViewModelModule
 
 @BillScope
 @Component(
-    dependencies = [CoreComponent::class],
+    dependencies = [
+        CoreComponent::class,
+        DatabaseComponent::class,
+    ],
     modules = [
         BillRepositoryModule::class,
         BillUseCaseModule::class,
@@ -28,7 +32,10 @@ interface BillComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(core: CoreComponent): BillComponent
+        fun create(
+            core: CoreComponent,
+            db: DatabaseComponent
+        ): BillComponent
     }
 
 }

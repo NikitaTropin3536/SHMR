@@ -14,7 +14,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -23,11 +25,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.common.R
 import com.example.common.navigation.Route
-import com.example.common.ui.item.FinLoadingBar
-import com.example.common.ui.item.FinSnackBar
-import com.example.common.ui.nav.BottomBar
-import com.example.common.ui.nav.TopBar
-import com.example.core.network.FinResult
+import com.example.common.ui.item.FinancilityErrorMessage
+import com.example.common.ui.item.FinancilityLoadingBar
+import com.example.common.ui.item.FinancilitySnackBar
+import com.example.common.ui.nav.FinancilityBottomBar
+import com.example.common.ui.nav.FinancilityTopBar
+import com.example.core.network.FinancilityResult
 import com.example.transations.presentation.expenses.today.viewmodel.ExpensesAction
 import com.example.transations.presentation.expenses.today.viewmodel.ExpensesEvent
 import com.example.transations.presentation.expenses.today.viewmodel.ExpensesViewModel
@@ -42,6 +45,10 @@ fun ExpensesScreen (
     navController: NavController
 ) {
 
+    var error: String? by remember {
+        mutableStateOf(null)
+    }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
@@ -51,22 +58,22 @@ fun ExpensesScreen (
         viewModel.action.collectLatest { action ->
             when (action) {
                 is ExpensesAction.ShowSnackBar -> {
+                    error = action.message
+
                     snackBarHostState.showSnackbar(action.message)
                 }
-
-                else -> {}
             }
         }
     }
 
     Scaffold (
         bottomBar = {
-            BottomBar(
+            FinancilityBottomBar(
                 navController = navController
             )
         },
         topBar = {
-            TopBar(
+            FinancilityTopBar(
                 title = "Расходы сегодня",
                 actions = {
                     IconButton(
@@ -104,28 +111,40 @@ fun ExpensesScreen (
             }
         },
         floatingActionButtonPosition = FabPosition.End,
-        snackbarHost = { FinSnackBar(snackBarHostState) }
+        snackbarHost = { FinancilitySnackBar(snackBarHostState) }
     ) { padding ->
 
-        if (state.status != FinResult.Success) {
-            FinLoadingBar(
-                modifier = Modifier
-                .padding(padding)
-            )
-        } else {
-            ExpensesView(
-                modifier = Modifier
-                    .padding(padding),
-                state = state
-            ) {
-                val json = Json.encodeToString(it)
-                val encoded = URLEncoder.encode(json, StandardCharsets.UTF_8.toString())
-
-                navController.navigate(
-                    "${Route.UpdateExpense}/${encoded}"
+        when (state.status) {
+            FinancilityResult.Error -> {
+                FinancilityErrorMessage(
+                    modifier = Modifier
+                        .padding(padding),
+                    text = error,
+                    onUpdate = {
+                        viewModel.onEvent(ExpensesEvent.OnLoadTodayExpenses)
+                    }
                 )
             }
-        }
+            FinancilityResult.Loading -> {
+                FinancilityLoadingBar(
+                    modifier = Modifier
+                        .padding(padding)
+                )
+            }
+            FinancilityResult.Success -> {
+                ExpensesView(
+                    modifier = Modifier
+                        .padding(padding),
+                    state = state
+                ) {
+                    val json = Json.encodeToString(it)
+                    val encoded = URLEncoder.encode(json, StandardCharsets.UTF_8.toString())
 
+                    navController.navigate(
+                        "${Route.UpdateExpense}/${encoded}"
+                    )
+                }
+            }
+        }
     }
 }

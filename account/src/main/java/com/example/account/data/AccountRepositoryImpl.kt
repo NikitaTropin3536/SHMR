@@ -1,0 +1,106 @@
+package com.example.account.data
+
+import com.example.account.domain.AccountRepository
+import com.example.common.constants.Constants
+import com.example.common.core.model.AccountBriefModel
+import com.example.core.error.ApiException
+import com.example.core.error.OfflineDataException
+import com.example.core.network.ktorClient
+import com.example.core.network.safeCall
+import com.example.storage.data.dao.AccountDao
+import com.example.storage.data.mappers.account.toAccountBriefModel
+import com.example.storage.data.mappers.account.toAccountEntity
+import com.example.storage.data.sync.AppSyncStorage
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
+import jakarta.inject.Inject
+
+/**
+ * Репозиторий для получения счетов
+ * */
+
+class AccountRepositoryImpl @Inject constructor(
+    private val accountDao: AccountDao,
+    private val appSyncStorage: AppSyncStorage
+) : AccountRepository {
+
+    /**
+     * Может выбросить [OfflineDataException]
+     * использовать только там, где нужно показать, что это оффлайн запрос
+     */
+    override suspend fun getRemoteAccounts(): Result<List<AccountBriefModel>> {
+        return safeCall {
+            try {
+                val response: HttpResponse = ktorClient.get("accounts")
+
+                if (response.status != HttpStatusCode.OK) {
+                    throw ApiException("Ошибка API: ${response.status}")
+                }
+
+                val accounts = response.body<List<AccountBriefModel>>()
+
+                /* save to local DB */
+                accountDao.insertAll(accounts.map {
+                    it.toAccountEntity()
+                })
+
+                /* save last sync */
+                appSyncStorage.saveSyncTime(
+                    feature = Constants.BILL_SYNC,
+                    timestamp = System.currentTimeMillis()
+                )
+
+                return@safeCall accounts
+            } catch (e: Exception) {
+
+                /* get cashed accounts */
+                val cached = accountDao.getAll().map {
+                    it.toAccountBriefModel()
+                }
+
+                /* if not cashed data */
+                if (cached.isNotEmpty()) {
+                    throw OfflineDataException(cached)
+                }
+
+                throw e
+            }
+        }
+    }
+
+    override suspend fun getCashedAccounts(): Result<List<AccountBriefModel>> {
+        return safeCall {
+
+            val cached = accountDao.getAll().map {
+                it.toAccountBriefModel()
+            }
+
+            if (cached.isNotEmpty()) {
+                return@safeCall cached
+            } else {
+                val response: HttpResponse = ktorClient.get("accounts")
+
+                if (response.status != HttpStatusCode.OK) {
+                    throw ApiException("Ошибка API: ${response.status}")
+                }
+
+                val accounts = response.body<List<AccountBriefModel>>()
+
+                /* save to local DB */
+                accountDao.insertAll(accounts.map {
+                    it.toAccountEntity()
+                })
+
+                /* save last sync */
+                appSyncStorage.saveSyncTime(
+                    feature = Constants.BILL_SYNC,
+                    timestamp = System.currentTimeMillis()
+                )
+
+                return@safeCall accounts
+            }
+        }
+    }
+}

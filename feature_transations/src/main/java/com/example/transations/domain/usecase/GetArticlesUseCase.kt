@@ -1,8 +1,8 @@
 package com.example.transations.domain.usecase
 
+import com.example.articles.domain.ArticlesRepository
 import com.example.common.core.model.CategoryModel
 import com.example.core.network.retryRequest
-import com.example.transations.domain.repository.TransactionsRepository
 import jakarta.inject.Inject
 
 /**
@@ -10,7 +10,7 @@ import jakarta.inject.Inject
  * */
 
 class GetArticlesUseCase @Inject constructor(
-    private val repository: TransactionsRepository
+    private val repository: ArticlesRepository
 ) {
 
     suspend operator fun invoke(): Result<List<CategoryModel>> {

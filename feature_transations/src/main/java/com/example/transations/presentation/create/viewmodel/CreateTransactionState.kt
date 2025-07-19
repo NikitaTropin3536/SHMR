@@ -2,7 +2,7 @@ package com.example.transations.presentation.create.viewmodel
 
 import com.example.common.core.model.AccountBriefModel
 import com.example.common.core.model.CategoryModel
-import com.example.core.network.FinResult
+import com.example.core.network.FinancilityResult
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -21,5 +21,6 @@ data class CreateTransactionState (
     val time: String = LocalTime.now()
         .format(DateTimeFormatter.ofPattern("HH:mm")),
     val comment: String? = null,
-    val status: FinResult = FinResult.Loading,
+    val status: FinancilityResult = FinancilityResult.Loading,
+    val lastSync: Long? = null
 )

@@ -1,7 +1,7 @@
 package com.example.transations.domain.usecase
 
 import com.example.core.network.retryRequest
-import com.example.transations.domain.model.TransactionModel
+import com.example.common.core.model.TransactionModel
 import com.example.transations.domain.repository.TransactionsRepository
 
 /**

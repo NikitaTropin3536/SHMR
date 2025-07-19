@@ -10,18 +10,21 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.common.R
-import com.example.common.ui.item.FinLoadingBar
-import com.example.common.ui.item.FinSnackBar
-import com.example.common.ui.nav.BottomBar
-import com.example.common.ui.nav.TopBar
-import com.example.core.network.FinResult
-import com.example.transations.domain.model.TransactionModel
+import com.example.common.core.model.TransactionModel
+import com.example.common.ui.item.FinancilityErrorMessage
+import com.example.common.ui.item.FinancilityLoadingBar
+import com.example.common.ui.item.FinancilitySnackBar
+import com.example.common.ui.nav.FinancilityBottomBar
+import com.example.common.ui.nav.FinancilityTopBar
+import com.example.core.network.FinancilityResult
 import com.example.transations.presentation.detail.viewmodel.UpdateTransactionAction
 import com.example.transations.presentation.detail.viewmodel.UpdateTransactionEvent
 import com.example.transations.presentation.detail.viewmodel.UpdateTransactionViewModel
@@ -34,6 +37,10 @@ fun UpdateTransactionScreen (
     transaction: TransactionModel,
     isIncome : Boolean,
 ) {
+    var error: String? by remember {
+        mutableStateOf(null)
+    }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
@@ -48,26 +55,26 @@ fun UpdateTransactionScreen (
         viewModel.action.collectLatest { action ->
             when (action) {
                 is UpdateTransactionAction.ShowSnackBar -> {
+                    error = action.message
+
                     snackBarHostState.showSnackbar(action.message)
                 }
 
                 UpdateTransactionAction.OnOpenScreen -> {
                     navController.popBackStack()
                 }
-
-                else -> {}
             }
         }
     }
 
     Scaffold (
         bottomBar = {
-            BottomBar(
+            FinancilityBottomBar(
                 navController = navController
             )
         },
         topBar = {
-            TopBar(
+            FinancilityTopBar(
                 title = "Детали ${if (isIncome) "дохода" else "расхода"}",
                 actions = {
                     IconButton(
@@ -98,21 +105,39 @@ fun UpdateTransactionScreen (
         modifier = Modifier
             .fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.onSurface,
-        snackbarHost = { FinSnackBar(snackBarHostState) }
+        snackbarHost = { FinancilitySnackBar(snackBarHostState) }
     ) { padding ->
 
-        if (state.status == FinResult.Loading) {
-            FinLoadingBar(
-                modifier = Modifier
-                    .padding(padding)
-            )
-        } else {
-            UpdateTransactionView (
-                modifier = Modifier.padding(padding),
-                state = state,
-                isIncome = isIncome
-            ) {
-                viewModel.onEvent(it)
+        when (state.status) {
+            FinancilityResult.Error -> {
+                FinancilityErrorMessage(
+                    modifier = Modifier
+                        .padding(padding),
+                    text = error,
+                    onUpdate = {
+                        viewModel.onEvent(
+                            UpdateTransactionEvent.OnLoadData(
+                                isIncome = isIncome,
+                                transaction = transaction
+                            )
+                        )
+                    }
+                )
+            }
+            FinancilityResult.Loading -> {
+                FinancilityLoadingBar(
+                    modifier = Modifier
+                        .padding(padding)
+                )
+            }
+            FinancilityResult.Success -> {
+                UpdateTransactionView (
+                    modifier = Modifier.padding(padding),
+                    state = state,
+                    isIncome = isIncome
+                ) {
+                    viewModel.onEvent(it)
+                }
             }
         }
 
