@@ -18,9 +18,10 @@ import com.example.bill.presentation.edit.viewmodel.EditBillEvent
 import com.example.bill.presentation.edit.viewmodel.EditBillState
 import com.example.common.R
 import com.example.common.core.model.CurrencyOption
-import com.example.common.ui.field.FinEditText
-import com.example.common.ui.field.FinNumTextField
-import com.example.common.ui.item.FinListItem
+import com.example.common.ui.field.FinancilityEditText
+import com.example.common.ui.field.FinancilityNumTextField
+import com.example.common.ui.item.FinancilityListItem
+import com.example.common.ui.item.FinancilitySyncMessage
 import com.example.common.ui.sheet.FinancilityCurrencySheet
 
 @Composable
@@ -50,8 +51,13 @@ fun EditBillView (
         modifier = modifier
             .fillMaxSize()
     ) {
+
+        state.lastSync?.let {
+            FinancilitySyncMessage(it)
+        }
+
         state.accounts.forEach {
-            FinEditText(
+            FinancilityEditText(
                 previousData = state.enteredName,
                 label = it.name,
                 backgroundColor = White,
@@ -68,7 +74,7 @@ fun EditBillView (
                 color = MaterialTheme.colorScheme.surfaceDim,
             )
 
-            FinNumTextField(
+            FinancilityNumTextField (
                 title = "Баланс",
                 previousData = state.enteredAmount,
                 backgroundColor = White,
@@ -83,7 +89,7 @@ fun EditBillView (
                 color = MaterialTheme.colorScheme.surfaceDim,
             )
 
-            FinListItem(
+            FinancilityListItem(
                 title = "Валюта",
                 description = null,
                 backgroundColor = White,

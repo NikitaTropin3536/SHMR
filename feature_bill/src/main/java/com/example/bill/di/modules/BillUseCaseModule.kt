@@ -2,6 +2,7 @@ package com.example.bill.di.modules
 
 import dagger.Module
 import dagger.Provides
+import com.example.account.domain.AccountRepository
 import com.example.bill.domain.repository.BillRepository
 import com.example.bill.domain.usecase.GetBillInfoUseCase
 import com.example.bill.domain.usecase.UpdateBillUseCase
@@ -15,9 +16,9 @@ class BillUseCaseModule {
 
     @Provides
     fun provideGetBillInfoUseCase(
-        billRepository: BillRepository
+        accountRepository: AccountRepository
     ): GetBillInfoUseCase {
-        return GetBillInfoUseCase(billRepository)
+        return GetBillInfoUseCase(accountRepository)
     }
 
     @Provides

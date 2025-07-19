@@ -11,7 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
@@ -20,11 +22,12 @@ import com.example.bill.presentation.edit.viewmodel.EditBillEvent
 import com.example.bill.presentation.edit.viewmodel.EditBillViewModel
 import com.example.common.R
 import com.example.common.navigation.Route
-import com.example.common.ui.item.FinLoadingBar
-import com.example.common.ui.item.FinSnackBar
-import com.example.common.ui.nav.BottomBar
-import com.example.common.ui.nav.TopBar
-import com.example.core.network.FinResult
+import com.example.common.ui.item.FinancilityErrorMessage
+import com.example.common.ui.item.FinancilityLoadingBar
+import com.example.common.ui.item.FinancilitySnackBar
+import com.example.common.ui.nav.FinancilityBottomBar
+import com.example.common.ui.nav.FinancilityTopBar
+import com.example.core.network.FinancilityResult
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -32,6 +35,10 @@ fun EditBillScreen (
     navController: NavController,
     viewModel: EditBillViewModel
 ) {
+    var error: String? by remember {
+        mutableStateOf(null)
+    }
+
     val state by viewModel.state.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
 
@@ -41,31 +48,31 @@ fun EditBillScreen (
         viewModel.action.collectLatest { action ->
             when (action) {
                 is EditBillAction.ShowSnackBar -> {
+                    error = action.message
+
                     snackBarHostState.showSnackbar(action.message)
                 }
 
                 EditBillAction.OnOpenBill -> {
                     navController.navigate(Route.Bill)
                 }
-
-                else -> {}
             }
         }
     }
 
     Scaffold (
         bottomBar = {
-            BottomBar(
+            FinancilityBottomBar(
                 navController = navController
             )
         },
         topBar = {
-            TopBar(
+            FinancilityTopBar(
                 title = "Мой счет",
                 actions = {
                     IconButton(
                         onClick = {
-                            if (state.status == FinResult.Success) {
+                            if (state.status == FinancilityResult.Success) {
                                 viewModel.onEvent(EditBillEvent.OnSaveBill)
                             }
                         }
@@ -93,22 +100,34 @@ fun EditBillScreen (
         modifier = Modifier
             .fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.onSurface,
-        snackbarHost = { FinSnackBar(snackBarHostState) }
+        snackbarHost = { FinancilitySnackBar(snackBarHostState) }
     ) { padding ->
 
-        if (state.status != FinResult.Success) {
-            FinLoadingBar(
-                modifier = Modifier
-                    .padding(padding)
-            )
-        } else {
-            EditBillView(
-                modifier = Modifier.padding(padding),
-                state = state
-            ) {
-                viewModel.onEvent(it)
+        when (state.status) {
+            FinancilityResult.Error -> {
+                FinancilityErrorMessage(
+                    modifier = Modifier
+                        .padding(padding),
+                    text = error,
+                    onUpdate = {
+                        viewModel.onEvent(EditBillEvent.OnLoadBill)
+                    }
+                )
+            }
+            FinancilityResult.Loading -> {
+                FinancilityLoadingBar(
+                    modifier = Modifier
+                        .padding(padding)
+                )
+            }
+            FinancilityResult.Success -> {
+                EditBillView(
+                    modifier = Modifier.padding(padding),
+                    state = state
+                ) {
+                    viewModel.onEvent(it)
+                }
             }
         }
-
     }
 }

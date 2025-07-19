@@ -9,11 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.common.R
-import com.example.common.ui.field.FinDatePicker
-import com.example.common.ui.item.FinListItem
+import com.example.common.core.model.TransactionModel
+import com.example.common.ui.field.FinancilityDayPicker
+import com.example.common.ui.item.FinancilityListItem
+import com.example.common.ui.item.FinancilitySyncMessage
 import com.example.core.converter.toEmoji
 import com.example.core.converter.toFormat
-import com.example.transations.domain.model.TransactionModel
 import com.example.transations.presentation.income.history.viewmodel.HistoryIncomeEvent
 import com.example.transations.presentation.income.history.viewmodel.HistoryIncomeState
 
@@ -35,7 +36,11 @@ fun HistoryIncomeView (
             )
     ){
 
-        FinDatePicker(
+        state.lastSync?.let {
+            FinancilitySyncMessage(it)
+        }
+
+        FinancilityDayPicker (
             title = "Начало",
             previousValue = state.startDate,
             backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -43,7 +48,7 @@ fun HistoryIncomeView (
             onEvent(HistoryIncomeEvent.OnChangedStartDate(it))
         }
 
-        FinDatePicker (
+        FinancilityDayPicker (
             title = "Конец",
             previousValue = state.endDate,
             backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -52,7 +57,7 @@ fun HistoryIncomeView (
         }
 
         if (state.accounts.isNotEmpty()) {
-            FinListItem(
+            FinancilityListItem(
                 title = "Сумма",
                 description = null,
                 backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -67,7 +72,7 @@ fun HistoryIncomeView (
                 it.createdAt
             }
             .forEach {
-                FinListItem(
+                FinancilityListItem(
                     trailingIcon = R.drawable.ic_light_arrow,
                     emoji = it.categoryModel.emoji,
                     title = it.categoryModel.name,

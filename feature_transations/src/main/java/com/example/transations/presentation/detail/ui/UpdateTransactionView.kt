@@ -10,13 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.common.R
-import com.example.common.ui.btn.FinButton
-import com.example.common.ui.field.FinDatePicker
-import com.example.common.ui.field.FinDropDown
-import com.example.common.ui.field.FinEditText
-import com.example.common.ui.field.FinNumTextField
-import com.example.common.ui.field.FinTimePicker
-import com.example.common.ui.item.FinListItem
+import com.example.common.ui.btn.FinancilityButton
+import com.example.common.ui.field.FinancilityDayPicker
+import com.example.common.ui.field.FinancilityDropDown
+import com.example.common.ui.field.FinancilityEditText
+import com.example.common.ui.field.FinancilityNumTextField
+import com.example.common.ui.field.FinancilityTimePicker
+import com.example.common.ui.item.FinancilityListItem
+import com.example.common.ui.item.FinancilitySyncMessage
 import com.example.transations.presentation.detail.viewmodel.UpdateTransactionEvent
 import com.example.transations.presentation.detail.viewmodel.UpdateTransactionState
 
@@ -31,8 +32,13 @@ fun UpdateTransactionView (
         modifier = modifier
             .fillMaxSize()
     ){
+
+        state.lastSync?.let {
+            FinancilitySyncMessage(it)
+        }
+
         if (state.accounts.isNotEmpty()) {
-            FinListItem(
+            FinancilityListItem (
                 title = "Счет",
                 trailingText = state.accounts[0].name,
                 trailingIcon = R.drawable.ic_light_arrow
@@ -40,7 +46,7 @@ fun UpdateTransactionView (
         }
 
         if (state.articles.isNotEmpty()) {
-            FinDropDown(
+            FinancilityDropDown(
                 title = "Статья",
                 options = state.articles,
                 previousData = state.article?.name ?: "",
@@ -50,7 +56,7 @@ fun UpdateTransactionView (
             )
         }
 
-        FinNumTextField(
+        FinancilityNumTextField (
             title = "Сумма",
             previousData = state.sum ?: "",
         ) {
@@ -64,21 +70,21 @@ fun UpdateTransactionView (
             color = MaterialTheme.colorScheme.surfaceDim,
         )
 
-        FinDatePicker(
+        FinancilityDayPicker (
             title = "Дата",
             previousValue = state.date
         ) {
             onEvent(UpdateTransactionEvent.OnUpdateDate(it))
         }
 
-        FinTimePicker(
+        FinancilityTimePicker(
             title = "Выбери время",
             previousValue = state.time
         ) {
             onEvent(UpdateTransactionEvent.OnUpdateTime(it))
         }
 
-        FinEditText(
+        FinancilityEditText(
             previousData = state.comment ?: "",
             label = "Комментарий",
             isShowLeadingIcon = false,
@@ -95,7 +101,7 @@ fun UpdateTransactionView (
             color = MaterialTheme.colorScheme.surfaceDim,
         )
 
-        FinButton(
+        FinancilityButton(
             text = "Удалить ${if (isIncome) "доход" else "расход"}",
             onClick = {
                 onEvent(UpdateTransactionEvent.OnDelete)

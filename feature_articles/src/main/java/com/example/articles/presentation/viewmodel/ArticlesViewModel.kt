@@ -2,9 +2,13 @@ package com.example.articles.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.common.constants.Constants.ARTICLES_SYNC
 import com.example.articles.domain.usecase.GetArticlesUseCase
+import com.example.common.core.model.CategoryModel
 import com.example.core.error.ErrorHandler
-import com.example.core.network.FinResult
+import com.example.core.error.OfflineDataException
+import com.example.core.network.FinancilityResult
+import com.example.storage.data.sync.AppSyncStorage
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +23,8 @@ import kotlinx.coroutines.launch
  * */
 
 class ArticlesViewModel @Inject constructor(
-    private val articlesUseCase : GetArticlesUseCase
+    private val articlesUseCase : GetArticlesUseCase,
+    private val appSyncStorage: AppSyncStorage
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ArticlesState())
@@ -54,7 +59,7 @@ class ArticlesViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
 
@@ -64,20 +69,33 @@ class ArticlesViewModel @Inject constructor(
                 .onSuccess { res ->
                     _state.update {
                         it.copy(
-                            status = FinResult.Success,
+                            status = FinancilityResult.Success,
                             articles = res
                         )
                     }
                 }
                 .onFailure { err ->
-                    _state.update {
-                        it.copy(
-                            status = FinResult.Error
-                        )
+
+                    if (err is OfflineDataException) {
+                        _state.update {
+                            it.copy(
+                                status = FinancilityResult.Success,
+                                articles = err.data as List<CategoryModel>,
+                                lastSync = appSyncStorage.getSyncTime(
+                                    feature = ARTICLES_SYNC,
+                                )
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(status = FinancilityResult.Error)
+                        }
+
+                        _action.emit(ArticleAction.ShowSnackBar(ErrorHandler().handleException(err)))
                     }
 
-                    _action.emit(ArticleAction.ShowSnackBar(ErrorHandler().handleException(err)))
                 }
         }
     }
+
 }

@@ -7,8 +7,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.common.ui.nav.BottomBar
-import com.example.common.ui.nav.TopBar
+import com.example.common.ui.nav.FinancilityBottomBar
+import com.example.common.ui.nav.FinancilityTopBar
+import com.example.settings.SettingsView
 
 @Composable
 fun SettingsScreen (
@@ -16,12 +17,12 @@ fun SettingsScreen (
 ) {
     Scaffold (
         bottomBar = {
-            BottomBar(
+            FinancilityBottomBar(
                 navController = navController
             )
         },
         topBar = {
-            TopBar(
+            FinancilityTopBar(
                 title = "Настройки",
                 actions = { }
             )

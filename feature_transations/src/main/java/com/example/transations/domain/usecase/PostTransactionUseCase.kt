@@ -1,7 +1,7 @@
 package com.example.transations.domain.usecase
 
 import com.example.core.network.retryRequest
-import com.example.transations.data.dto.TransactionDto
+import com.example.transations.data.dto.RequestTransactionDto
 import com.example.transations.domain.repository.TransactionsRepository
 
 /**
@@ -12,7 +12,7 @@ class PostTransactionUseCase (
     private val repository: TransactionsRepository
 ) {
     suspend fun invoke (
-        transaction: TransactionDto
+        transaction: RequestTransactionDto
     ): Result<Unit> {
 
         return retryRequest {

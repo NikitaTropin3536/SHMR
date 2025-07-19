@@ -2,9 +2,12 @@ package com.example.transations.di.module
 
 import dagger.Module
 import dagger.Provides
+import com.example.account.domain.AccountRepository
+import com.example.articles.domain.ArticlesRepository
 import com.example.transations.domain.repository.TransactionsRepository
 import com.example.transations.domain.usecase.DeleteTransactionUseCase
-import com.example.transations.domain.usecase.GetAccountUseCase
+import com.example.transations.domain.usecase.GetAccountsUseCase
+import com.example.transations.domain.usecase.GetArticlesUseCase
 import com.example.transations.domain.usecase.GetTransactionsUseCase
 import com.example.transations.domain.usecase.PostTransactionUseCase
 import com.example.transations.domain.usecase.UpdateTransactionUseCase
@@ -31,9 +34,9 @@ class TransactionsUseCaseModule {
 
     @Provides
     fun provideGetAccountUseCase(
-        transactionsRepository: TransactionsRepository
-    ): GetAccountUseCase {
-        return GetAccountUseCase(transactionsRepository)
+        accountsRepository: AccountRepository
+    ): GetAccountsUseCase {
+        return GetAccountsUseCase(accountsRepository)
     }
 
     @Provides
@@ -50,5 +53,11 @@ class TransactionsUseCaseModule {
         return DeleteTransactionUseCase(transactionsRepository)
     }
 
+    @Provides
+    fun provideGetArticlesUseCase(
+        articlesRepository: ArticlesRepository
+    ): GetArticlesUseCase {
+        return GetArticlesUseCase(articlesRepository)
+    }
 
 }

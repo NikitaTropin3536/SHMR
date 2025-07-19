@@ -1,12 +1,21 @@
 package com.example.transations.data.repository
 
-import com.example.common.core.model.AccountBriefModel
-import com.example.common.core.model.CategoryModel
+import android.util.Log
+import com.example.common.constants.Constants
+import com.example.common.core.model.TransactionModel
 import com.example.core.error.ApiException
+import com.example.core.error.OfflineDataException
 import com.example.core.network.ktorClient
 import com.example.core.network.safeCall
-import com.example.transations.data.dto.TransactionDto
-import com.example.transations.domain.model.TransactionModel
+import com.example.storage.data.dao.TransactionDao
+import com.example.storage.data.mappers.transaction.toTransactionEntity
+import com.example.storage.data.mappers.transaction.toTransactionModel
+import com.example.storage.data.sync.AppSyncStorage
+import com.example.transations.data.dto.RequestTransactionDto
+import com.example.transations.data.dto.ResponseTransactionDto
+import com.example.transations.data.mappers.RequesttoTransactionEntity
+import com.example.transations.data.mappers.ResponsetoTransactionEntity
+import com.example.transations.data.mappers.toTransactionDto
 import com.example.transations.domain.repository.TransactionsRepository
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -16,6 +25,9 @@ import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
+import jakarta.inject.Inject
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /**
  * Репозиторий, который выолняет функции
@@ -26,7 +38,10 @@ import io.ktor.http.HttpStatusCode
  * - удаления транзакций
  * */
 
-class TransactionsRepositoryImpl : TransactionsRepository {
+class TransactionsRepositoryImpl @Inject constructor(
+    private val transactionDao: TransactionDao,
+    private val appSyncStorage: AppSyncStorage
+) : TransactionsRepository {
 
     override suspend fun getTransactions(
         accountId: Int,
@@ -34,50 +49,105 @@ class TransactionsRepositoryImpl : TransactionsRepository {
         endDate: String,
     ): Result<List<TransactionModel>> {
         return safeCall {
-            val response = ktorClient.get("transactions/account/${accountId}/period") {
-                url {
-                    parameters.append("startDate", startDate)
-                    parameters.append("endDate", endDate)
+            /* отправляем несихронизованные на сервер */
+            uploadUnsyncedTransactions()
+
+            try {
+                val response = ktorClient.get("transactions/account/${accountId}/period") {
+                    url {
+                        parameters.append("startDate", startDate)
+                        parameters.append("endDate", endDate)
+                    }
                 }
-            }
 
-            if (response.status != HttpStatusCode.OK) {
-                throw ApiException("Ошибка API: ${response.status}")
-            }
+                if (response.status != HttpStatusCode.OK) {
+                    throw ApiException("Ошибка API: ${response.status}")
+                }
 
-            response.body()
+                val transactions = response.body<List<TransactionModel>>()
+
+                /* save to local DB */
+                transactionDao.insertAll(transactions.map {
+                    it.toTransactionEntity(
+                        isSynced = true
+                    )
+                })
+
+                /* save last sync */
+                appSyncStorage.saveSyncTime(
+                    feature = Constants.TRANSACTION_SYNC,
+                    timestamp = System.currentTimeMillis()
+                )
+
+                return@safeCall transactions
+
+            } catch (e: Exception) {
+
+                /* get cashed transactions */
+                val cached = transactionDao.getAll()
+                    .map {
+                        it.toTransactionModel()
+                    }
+
+                /* if not cashed data */
+                if (cached.isNotEmpty()) {
+                    Log.d("OfflineData", "cached = $cached")
+
+                    throw OfflineDataException(
+                        cached.filter {
+                            val transactionDateTimeMillis = LocalDate.parse(it.transactionDate.split("T")[0], DateTimeFormatter.ISO_LOCAL_DATE)
+                            val startDateTimeMillis = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
+                            val endDateTimeMillis = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE)
+
+                            startDateTimeMillis <= transactionDateTimeMillis && transactionDateTimeMillis <= endDateTimeMillis
+                        }
+                    )
+                }
+
+                throw e
+            }
         }
     }
 
-    override suspend fun getAccounts(): Result<List<AccountBriefModel>> {
+    override suspend fun createTransaction(requestTransactionDto: RequestTransactionDto): Result<Unit> {
         return safeCall {
-            val response: HttpResponse = ktorClient.get("accounts")
 
-            if (response.status != HttpStatusCode.OK) {
-                throw ApiException("Ошибка API: ${response.status}")
+            try {
+                val response: HttpResponse = ktorClient.post("transactions") {
+                    setBody(requestTransactionDto)
+                }
+
+                if (response.status != HttpStatusCode.OK && response.status != HttpStatusCode.Created) {
+                    throw ApiException("Ошибка API: ${response.status}")
+                }
+
+                val transaction = response.body<ResponseTransactionDto>()
+
+                /* save to local db */
+                val entity = transaction.ResponsetoTransactionEntity(
+                    isSynced = true
+                )
+
+                transactionDao.insert(entity)
+
+                return@safeCall
+            } catch (e: Exception) {
+
+                /* добавляем в бд, но не помечаем как синхронизованный */
+                val entity = requestTransactionDto.RequesttoTransactionEntity(
+                    isSynced = false
+                )
+
+                Log.d("OfflineData", "добавляем в кэш $e $entity")
+
+                transactionDao.insert(entity)
             }
-
-            response.body()
-        }
-    }
-
-    override suspend fun createTransaction(transaction: TransactionDto): Result<Unit> {
-        return safeCall {
-            val response: HttpResponse = ktorClient.post("transactions") {
-                setBody(transaction)
-            }
-
-            if (response.status != HttpStatusCode.OK && response.status != HttpStatusCode.Created) {
-                throw ApiException("Ошибка API: ${response.status}")
-            }
-
-            response.body()
         }
     }
 
     override suspend fun updateTransaction(
         id: Int,
-        transaction: TransactionDto
+        transaction: RequestTransactionDto
     ): Result<Unit> {
         return safeCall {
             val response: HttpResponse = ktorClient.put("transactions/${id}") {
@@ -102,19 +172,49 @@ class TransactionsRepositoryImpl : TransactionsRepository {
                 throw ApiException("Ошибка API: ${response.status}")
             }
 
+            /* delete from local */
+            transactionDao.delete(id)
+
             response.body()
         }
     }
 
-    override suspend fun getArticles(): Result<List<CategoryModel>> {
+    /* получаем все несинхронизованные транзакции и отправляем их на сервер */
+    override suspend fun uploadUnsyncedTransactions(): Result<Unit> {
         return safeCall {
-            val response: HttpResponse = ktorClient.get("categories")
+            val unsyncedTransactions = transactionDao.getUnsynced()
 
-            if (response.status != HttpStatusCode.OK) {
-                throw ApiException("Ошибка API: ${response.status}")
+            Log.d("OfflineData", "1. unsynced cached = $unsyncedTransactions")
+
+            if (unsyncedTransactions.isEmpty()) return@safeCall
+
+            for (unsyncedTransaction in unsyncedTransactions) {
+
+                val response: HttpResponse = ktorClient.post("transactions") {
+                    setBody(unsyncedTransaction.toTransactionDto())
+                }
+
+                if (response.status != HttpStatusCode.OK && response.status != HttpStatusCode.Created) {
+                    throw ApiException("Ошибка API: ${response.status}")
+                }
+
+                /* удаляем из локального хранилища */
+                transactionDao.delete(unsyncedTransaction.id)
+
+                val transaction = response.body<ResponseTransactionDto>()
+
+                /* сохраняем с ID в локальное хранилище */
+                val entity = transaction.ResponsetoTransactionEntity(
+                    isSynced = true
+                )
+
+                transactionDao.insert(entity)
             }
 
-            response.body()
+            Log.d("OfflineData", "2. unsynced cached = ${transactionDao.getUnsynced()}")
+
         }
+
     }
+
 }

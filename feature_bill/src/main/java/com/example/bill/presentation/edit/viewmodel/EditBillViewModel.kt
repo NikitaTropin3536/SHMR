@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.bill.data.model.UpdateAccountDto
 import com.example.bill.domain.usecase.GetBillInfoUseCase
 import com.example.bill.domain.usecase.UpdateBillUseCase
+import com.example.common.constants.Constants.BILL_SYNC
 import com.example.common.core.model.AccountBriefModel
 import com.example.common.core.model.CurrencyOption
 import com.example.core.error.ErrorHandler
-import com.example.core.network.FinResult
+import com.example.core.error.OfflineDataException
+import com.example.core.network.FinancilityResult
+import com.example.storage.data.sync.AppSyncStorage
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +27,8 @@ import kotlinx.coroutines.launch
 
 class EditBillViewModel @Inject constructor(
     private val billInfoUseCase : GetBillInfoUseCase,
-    private val updateBillUseCase : UpdateBillUseCase
+    private val updateBillUseCase : UpdateBillUseCase,
+    private val appSyncStorage: AppSyncStorage
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditBillState())
@@ -84,7 +88,7 @@ class EditBillViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
 
@@ -95,7 +99,7 @@ class EditBillViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             accounts = res,
-                            status = FinResult.Success,
+                            status = FinancilityResult.Success,
                             enteredName = res[0].name,
                             chosenCurrency = res[0].currency.toCurrency(),
                             enteredAmount = res[0].balance
@@ -104,20 +108,36 @@ class EditBillViewModel @Inject constructor(
                 } else {
                     _state.update {
                         it.copy(
-                            status = FinResult.Error
+                            status = FinancilityResult.Error
                         )
                     }
 
                     _action.emit(EditBillAction.ShowSnackBar("Не удалось найти аккаунт"))
                 }
             }.onFailure { err ->
-                _state.update {
-                    it.copy(
-                        status = FinResult.Error
-                    )
-                }
+                if (err is OfflineDataException) {
+                    val accounts = err.data as List<AccountBriefModel>
 
-                _action.emit(EditBillAction.ShowSnackBar(ErrorHandler().handleException(err)))
+                    _state.update {
+                        it.copy(
+
+                            status = FinancilityResult.Success,
+                            accounts = accounts,
+                            enteredName = accounts[0].name,
+                            chosenCurrency = accounts[0].currency.toCurrency(),
+                            enteredAmount = accounts[0].balance,
+                            lastSync = appSyncStorage.getSyncTime(
+                                feature = BILL_SYNC,
+                            )
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(status = FinancilityResult.Error)
+                    }
+
+                    _action.emit(EditBillAction.ShowSnackBar(ErrorHandler().handleException(err)))
+                }
             }
         }
     }
@@ -128,7 +148,7 @@ class EditBillViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
 
@@ -141,7 +161,7 @@ class EditBillViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         accounts = listOf<AccountBriefModel>(res),
-                        status = FinResult.Success
+                        status = FinancilityResult.Success
                     )
                 }
 
@@ -150,7 +170,7 @@ class EditBillViewModel @Inject constructor(
             }.onFailure { err ->
                 _state.update {
                     it.copy(
-                        status = FinResult.Error
+                        status = FinancilityResult.Error
                     )
                 }
 

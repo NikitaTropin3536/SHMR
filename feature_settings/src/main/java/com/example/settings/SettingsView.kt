@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.common.R
-import com.example.common.ui.field.FinToggleListItem
-import com.example.common.ui.item.FinListItem
+import com.example.common.ui.field.FinancilityToggleListItem
+import com.example.common.ui.item.FinancilityListItem
 
 @Composable
 fun SettingsView (
@@ -20,7 +20,7 @@ fun SettingsView (
         modifier = modifier
             .fillMaxSize()
     ){
-        FinToggleListItem(
+        FinancilityToggleListItem(
             title = "Светлая темная авто",
             isChecked = false,
             onClick = {
@@ -29,7 +29,7 @@ fun SettingsView (
         )
 
         options.forEach {
-            FinListItem(
+            FinancilityListItem(
                 trailingIcon = R.drawable.ic_dark_arrow,
                 title = it,
                 height = 56.dp

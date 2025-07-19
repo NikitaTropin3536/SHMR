@@ -9,7 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.bill.presentation.current.viewmodel.BillEvent
 import com.example.bill.presentation.current.viewmodel.BillState
-import com.example.common.ui.item.FinListItem
+import com.example.common.ui.item.FinancilityListItem
+import com.example.common.ui.item.FinancilitySyncMessage
 import com.example.core.converter.toEmoji
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,8 +25,13 @@ fun BillView (
         modifier = modifier
             .fillMaxSize()
     ){
+
+        state.lastSync?.let {
+            FinancilitySyncMessage(it)
+        }
+
         state.accounts.forEach {
-            FinListItem(
+            FinancilityListItem(
                 emoji = "\uD83D\uDC7B",
                 title = "Счет",
                 description = null,
@@ -35,7 +41,7 @@ fun BillView (
                 isClickable = false,
             )
 
-            FinListItem(
+            FinancilityListItem(
                 emoji = "\uD83D\uDCB0",
                 title = "Баланс",
                 description = null,
@@ -45,7 +51,7 @@ fun BillView (
                 backgroundEmojiColor = Color.White
             )
 
-            FinListItem(
+            FinancilityListItem(
                 title = "Валюта",
                 description = null,
                 backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,

@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.core.di.CoreComponent
 import com.example.core.di.DaggerCoreComponent
 import com.example.core.di.utils.CoreProvider
+import com.example.financialapp.worker.scheduleSyncDataWorker
 
 /**
  * При запуске приложения запускает Dagger и инициазизирует [coreComponent]
@@ -16,7 +17,11 @@ class MainApplication : Application(), CoreProvider {
         DaggerCoreComponent.factory().create(this)
     }
 
+
+
     override fun onCreate() {
         super.onCreate()
+
+        scheduleSyncDataWorker(this)
     }
 }

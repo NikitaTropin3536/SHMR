@@ -1,0 +1,19 @@
+package com.example.feature_splash.domain
+
+import com.example.articles.domain.ArticlesRepository
+import com.example.common.core.model.CategoryModel
+import jakarta.inject.Inject
+
+/**
+ * Use Case для получения статей
+ * */
+
+class GetArticlesUseCase @Inject constructor(
+    private val repository: ArticlesRepository
+) {
+
+    suspend operator fun invoke(): Result<List<CategoryModel>> {
+        return repository.getArticles()
+    }
+
+}

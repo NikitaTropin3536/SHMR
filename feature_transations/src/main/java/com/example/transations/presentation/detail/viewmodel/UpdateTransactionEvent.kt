@@ -1,7 +1,7 @@
 package com.example.transations.presentation.detail.viewmodel
 
 import com.example.common.core.model.CategoryModel
-import com.example.transations.domain.model.TransactionModel
+import com.example.common.core.model.TransactionModel
 
 /**
  * События экрана обновления транзакций

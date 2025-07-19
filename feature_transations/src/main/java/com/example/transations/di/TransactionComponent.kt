@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import dagger.Component
 import com.example.core.di.CoreComponent
 import com.example.core.di.modules.SharedViewModelModule
+import com.example.storage.di.DatabaseComponent
 import com.example.transations.di.module.TransactionsRepositoryModule
 import com.example.transations.di.module.TransactionsUseCaseModule
 import com.example.transations.di.module.TransactionsViewModelModule
@@ -14,7 +15,10 @@ import com.example.transations.di.module.TransactionsViewModelModule
 
 @TransactionScope
 @Component(
-    dependencies = [CoreComponent::class],
+    dependencies = [
+        CoreComponent::class,
+        DatabaseComponent::class,
+    ],
     modules = [
         TransactionsRepositoryModule::class,
         TransactionsUseCaseModule::class,
@@ -28,7 +32,10 @@ interface TransactionComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(core: CoreComponent): TransactionComponent
+        fun create(
+            core: CoreComponent,
+            db: DatabaseComponent
+        ): TransactionComponent
     }
 
 }

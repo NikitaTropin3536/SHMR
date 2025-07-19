@@ -2,9 +2,13 @@ package com.example.transations.presentation.expenses.today.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.common.constants.Constants.TRANSACTION_SYNC
+import com.example.common.core.model.TransactionModel
 import com.example.core.error.ErrorHandler
-import com.example.core.network.FinResult
-import com.example.transations.domain.usecase.GetAccountUseCase
+import com.example.core.error.OfflineDataException
+import com.example.core.network.FinancilityResult
+import com.example.storage.data.sync.AppSyncStorage
+import com.example.transations.domain.usecase.GetAccountsUseCase
 import com.example.transations.domain.usecase.GetTransactionsUseCase
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,8 +26,9 @@ import java.time.format.DateTimeFormatter
  * */
 
 class ExpensesViewModel @Inject constructor(
-    private val accountsUseCase : GetAccountUseCase,
-    private val transactionUseCase : GetTransactionsUseCase
+    private val accountsUseCase : GetAccountsUseCase,
+    private val transactionUseCase : GetTransactionsUseCase,
+    private val appSyncStorage: AppSyncStorage
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ExpensesState())
@@ -58,11 +63,9 @@ class ExpensesViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
-
-            println("FAPP load acc 3 ${state.value.accounts}")
 
             val result = transactionUseCase.invoke(
                 id = id,
@@ -74,22 +77,34 @@ class ExpensesViewModel @Inject constructor(
                 .onSuccess { res ->
                     _state.update {
                         it.copy(
-                            status = FinResult.Success,
+                            status = FinancilityResult.Success,
                             transactions = res.filter { !it.categoryModel.isIncome }
                         )
                     }
                 }
                 .onFailure { err ->
-                    _state.update {
-                        it.copy(
-                            status = FinResult.Error
-                        )
-                    }
+                    if (err is OfflineDataException) {
+                        val transactions = err.data as List<TransactionModel>
 
-                    _action.emit(ExpensesAction.ShowSnackBar(ErrorHandler().handleException(err)))
+                        _state.update {
+                            it.copy(
+                                status = FinancilityResult.Success,
+                                transactions = transactions.filter { !it.categoryModel.isIncome  },
+                                lastSync = appSyncStorage.getSyncTime(
+                                    feature = TRANSACTION_SYNC,
+                                )
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(status = FinancilityResult.Error)
+                        }
+
+                        _action.emit(ExpensesAction.ShowSnackBar(ErrorHandler().handleException(err)))
+                    }
                 }
+            }
         }
-    }
 
     private fun loadAccounts(
         onSuccess : (Int) -> Unit,
@@ -97,13 +112,11 @@ class ExpensesViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinResult.Loading
+                    status = FinancilityResult.Loading
                 )
             }
 
             val result = accountsUseCase.invoke()
-
-            println("FAPP load acc 2 $result")
 
             result
                 .onSuccess { res ->
@@ -113,12 +126,12 @@ class ExpensesViewModel @Inject constructor(
                                 accounts = res
                             )
                         }
-                        println("FAPP load acc 2.1 ${_state.value.accounts}")
+
                         onSuccess(res[0].id)
                     } else {
                         _state.update {
                             it.copy(
-                                status = FinResult.Error
+                                status = FinancilityResult.Error
                             )
                         }
 
@@ -128,7 +141,7 @@ class ExpensesViewModel @Inject constructor(
                 .onFailure { err ->
                     _state.update {
                         it.copy(
-                            status = FinResult.Error
+                            status = FinancilityResult.Error
                         )
                     }
 
