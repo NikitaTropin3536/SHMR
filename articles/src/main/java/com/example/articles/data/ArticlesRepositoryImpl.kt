@@ -2,7 +2,7 @@ package com.example.articles.data
 
 import com.example.articles.domain.ArticlesRepository
 import com.example.common.constants.Constants
-import com.example.common.core.model.CategoryModel
+import com.example.common.core.model.category.CategoryModel
 import com.example.core.error.ApiException
 import com.example.core.error.OfflineDataException
 import com.example.core.network.ktorClient

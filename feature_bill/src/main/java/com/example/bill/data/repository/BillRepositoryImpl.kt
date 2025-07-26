@@ -2,7 +2,7 @@ package com.example.bill.data.repository
 
 import com.example.bill.data.model.UpdateAccountDto
 import com.example.bill.domain.repository.BillRepository
-import com.example.common.core.model.AccountBriefModel
+import com.example.common.core.model.account.AccountBriefModel
 import com.example.core.error.ApiException
 import com.example.core.network.ktorClient
 import com.example.core.network.safeCall

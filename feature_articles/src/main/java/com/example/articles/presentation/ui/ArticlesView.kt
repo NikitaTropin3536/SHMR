@@ -10,12 +10,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.articles.R
+import com.example.common.ui.field.FinEditText
 import com.example.articles.presentation.viewmodel.ArticlesEvent
 import com.example.articles.presentation.viewmodel.ArticlesState
-import com.example.common.ui.field.FinancilityEditText
-import com.example.common.ui.item.FinancilityListItem
-import com.example.common.ui.item.FinancilitySyncMessage
+import com.example.common.ui.item.FinListItem
+import com.example.common.ui.item.FinSyncMessage
 
 @Composable
 fun ArticlesView (
@@ -35,12 +37,12 @@ fun ArticlesView (
     ){
 
         state.lastSync?.let {
-            FinancilitySyncMessage(it)
+            FinSyncMessage(it)
         }
 
-        FinancilityEditText(
+        FinEditText(
             previousData = "",
-            label = "Найти статью",
+            label = stringResource(R.string.search_articles),
             isShowLeadingIcon = false,
             onTrailingIconClick = {
                 onEvent(
@@ -62,7 +64,7 @@ fun ArticlesView (
         state.articles
             .filter { it.name.contains(state.searchValue) }
             .forEach {
-                FinancilityListItem(
+                FinListItem(
                     emoji = it.emoji,
                     title = it.name,
                     height = 70.dp,

@@ -9,11 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.example.common.ui.item.FinancilityListItem
+import com.example.common.ui.item.FinListItem
 import java.util.Calendar
 
 @Composable
-fun FinancilityTimePicker (
+fun FinTimePicker(
     title: String,
     previousValue: String,
     backgroundColor: Color = MaterialTheme.colorScheme.onSurface,
@@ -44,7 +44,7 @@ fun FinancilityTimePicker (
         )
     }
 
-    FinancilityListItem(
+    FinListItem(
         title = title,
         trailingText = selectedTime,
         backgroundColor = backgroundColor,

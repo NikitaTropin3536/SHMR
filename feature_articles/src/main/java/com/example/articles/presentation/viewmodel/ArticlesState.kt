@@ -1,7 +1,7 @@
 package com.example.articles.presentation.viewmodel
 
-import com.example.common.core.model.CategoryModel
-import com.example.core.network.FinancilityResult
+import com.example.common.core.model.category.CategoryModel
+import com.example.core.network.FinResult
 
 /**
  * Состояние экрана статей
@@ -10,6 +10,6 @@ import com.example.core.network.FinancilityResult
 data class ArticlesState (
     val articles: List<CategoryModel> = emptyList(),
     val searchValue: String = "",
-    val status: FinancilityResult = FinancilityResult.Loading,
+    val status: FinResult = FinResult.Loading,
     val lastSync: Long? = null,
 )

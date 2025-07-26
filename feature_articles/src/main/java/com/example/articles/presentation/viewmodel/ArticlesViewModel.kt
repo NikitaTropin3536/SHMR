@@ -2,12 +2,12 @@ package com.example.articles.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.common.constants.Constants.ARTICLES_SYNC
 import com.example.articles.domain.usecase.GetArticlesUseCase
-import com.example.common.core.model.CategoryModel
+import com.example.common.constants.Constants.ARTICLES_SYNC
+import com.example.common.core.model.category.CategoryModel
 import com.example.core.error.ErrorHandler
 import com.example.core.error.OfflineDataException
-import com.example.core.network.FinancilityResult
+import com.example.core.network.FinResult
 import com.example.storage.data.sync.AppSyncStorage
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -59,7 +59,7 @@ class ArticlesViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    status = FinancilityResult.Loading
+                    status = FinResult.Loading
                 )
             }
 
@@ -69,7 +69,7 @@ class ArticlesViewModel @Inject constructor(
                 .onSuccess { res ->
                     _state.update {
                         it.copy(
-                            status = FinancilityResult.Success,
+                            status = FinResult.Success,
                             articles = res
                         )
                     }
@@ -79,7 +79,7 @@ class ArticlesViewModel @Inject constructor(
                     if (err is OfflineDataException) {
                         _state.update {
                             it.copy(
-                                status = FinancilityResult.Success,
+                                status = FinResult.Success,
                                 articles = err.data as List<CategoryModel>,
                                 lastSync = appSyncStorage.getSyncTime(
                                     feature = ARTICLES_SYNC,
@@ -88,7 +88,7 @@ class ArticlesViewModel @Inject constructor(
                         }
                     } else {
                         _state.update {
-                            it.copy(status = FinancilityResult.Error)
+                            it.copy(status = FinResult.Error)
                         }
 
                         _action.emit(ArticleAction.ShowSnackBar(ErrorHandler().handleException(err)))

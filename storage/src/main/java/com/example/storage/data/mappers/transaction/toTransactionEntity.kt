@@ -1,6 +1,6 @@
 package com.example.storage.data.mappers.transaction
 
-import com.example.common.core.model.TransactionModel
+import com.example.common.core.model.transaction.TransactionModel
 import com.example.storage.data.model.TransactionEntity
 
 fun TransactionModel.toTransactionEntity(

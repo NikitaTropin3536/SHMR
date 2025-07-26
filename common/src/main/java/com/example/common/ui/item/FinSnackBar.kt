@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FinancilitySnackBar(snackBarHostState: SnackbarHostState) {
+fun FinSnackBar(snackBarHostState: SnackbarHostState) {
     SnackbarHost(hostState = snackBarHostState) { data ->
         Card(
             modifier = Modifier

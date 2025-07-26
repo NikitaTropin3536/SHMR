@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun FinancilityNumTextField (
+fun FinNumTextField (
     title: String,
     previousData: String,
     height: Dp = 56.dp,

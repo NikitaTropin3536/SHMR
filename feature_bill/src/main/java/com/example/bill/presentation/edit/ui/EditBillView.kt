@@ -13,16 +13,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.bill.presentation.edit.viewmodel.EditBillEvent
 import com.example.bill.presentation.edit.viewmodel.EditBillState
-import com.example.common.R
-import com.example.common.core.model.CurrencyOption
-import com.example.common.ui.field.FinancilityEditText
-import com.example.common.ui.field.FinancilityNumTextField
-import com.example.common.ui.item.FinancilityListItem
-import com.example.common.ui.item.FinancilitySyncMessage
-import com.example.common.ui.sheet.FinancilityCurrencySheet
+import com.example.bill.R
+import com.example.common.core.model.account.CurrencyOption
+import com.example.common.ui.field.FinEditText
+import com.example.common.ui.field.FinNumTextField
+import com.example.common.ui.item.FinListItem
+import com.example.common.ui.item.FinSyncMessage
+import com.example.common.ui.sheet.FinCurrencySheet
 
 @Composable
 fun EditBillView (
@@ -33,7 +34,7 @@ fun EditBillView (
     var isSheetOpen by remember { mutableStateOf(false) }
 
     if (isSheetOpen) {
-        FinancilityCurrencySheet(
+        FinCurrencySheet(
             currencies = listOf(
                 CurrencyOption("RUB", "₽", "Российский рубль ₽"),
                 CurrencyOption("USD", "$", "Американский доллар $"),
@@ -53,11 +54,11 @@ fun EditBillView (
     ) {
 
         state.lastSync?.let {
-            FinancilitySyncMessage(it)
+            FinSyncMessage(it)
         }
 
         state.accounts.forEach {
-            FinancilityEditText(
+            FinEditText(
                 previousData = state.enteredName,
                 label = it.name,
                 backgroundColor = White,
@@ -74,8 +75,8 @@ fun EditBillView (
                 color = MaterialTheme.colorScheme.surfaceDim,
             )
 
-            FinancilityNumTextField (
-                title = "Баланс",
+            FinNumTextField(
+                title = stringResource(R.string.balance),
                 previousData = state.enteredAmount,
                 backgroundColor = White,
             ) {
@@ -89,12 +90,12 @@ fun EditBillView (
                 color = MaterialTheme.colorScheme.surfaceDim,
             )
 
-            FinancilityListItem(
-                title = "Валюта",
+            FinListItem(
+                title = stringResource(R.string.currency),
                 description = null,
                 backgroundColor = White,
                 trailingText = state.chosenCurrency.symbol,
-                trailingIcon = R.drawable.ic_light_arrow,
+                trailingIcon = com.example.common.R.drawable.ic_light_arrow,
 
                 isShowDivider = false,
             ) {

@@ -14,15 +14,16 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Financility"
+rootProject.name = "FinancialApp"
 include(":app")
 include(":feature_articles")
 include(":core")
 include(":common")
 include(":feature_settings")
 include(":feature_bill")
-include(":feature_transations")
+include(":feature_transactions")
 include(":storage")
 include(":articles")
 include(":account")
 include(":feature_splash")
+include(":transactions")

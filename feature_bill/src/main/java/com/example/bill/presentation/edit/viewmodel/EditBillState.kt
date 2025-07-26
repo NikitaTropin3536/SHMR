@@ -1,8 +1,8 @@
 package com.example.bill.presentation.edit.viewmodel
 
-import com.example.common.core.model.AccountBriefModel
-import com.example.common.core.model.CurrencyOption
-import com.example.core.network.FinancilityResult
+import com.example.common.core.model.account.AccountBriefModel
+import com.example.common.core.model.account.CurrencyOption
+import com.example.core.network.FinResult
 
 /**
  * Состояние экрана счетов
@@ -11,7 +11,7 @@ import com.example.core.network.FinancilityResult
 
 data class EditBillState (
     val accounts : List<AccountBriefModel> = emptyList(),
-    val status: FinancilityResult = FinancilityResult.Loading,
+    val status: FinResult = FinResult.Loading,
     val enteredName: String = "",
     val enteredAmount: String = "",
     val chosenCurrency: CurrencyOption = CurrencyOption("NONE", "-", "NONE"),

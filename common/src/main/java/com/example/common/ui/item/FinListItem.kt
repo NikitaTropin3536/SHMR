@@ -1,5 +1,6 @@
 package com.example.common.ui.item
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,10 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.core.model.haptics.HapticSettings
+import com.example.common.ui.haptics.performHaptic
 
 @Composable
-fun FinancilityListItem (
+fun FinListItem (
     title: String,
+    hapticSettings: HapticSettings = HapticSettings(enabled = false),
+    context: Context? = null,
     trailingText: String? = null,
     trailingSubText: String? = null,
     trailingIcon: Int? = null,
@@ -44,6 +49,11 @@ fun FinancilityListItem (
     modifier: Modifier = Modifier,
     onClick: () -> Unit = { }
 ) {
+    /*
+        val context = LocalContext.current
+        val hapticSettings = AppSyncStorage(context).loadHaptics()
+    */
+
     Column (
         modifier = modifier
             .fillMaxWidth()
@@ -57,7 +67,12 @@ fun FinancilityListItem (
                 .fillMaxSize()
                 .let {
                     if (isClickable) {
-                        it.clickable { onClick() }
+                        it.clickable {
+                            onClick()
+                            context?.let {
+                                performHaptic(it, hapticSettings)
+                            }
+                        }
                     } else {
                         it
                     }
@@ -77,7 +92,7 @@ fun FinancilityListItem (
                         fontSize =
                             if (!isUnicodeEscape(it)) 18.sp
                             else 10.sp,
-                        fontWeight = FontWeight(500),
+                        fontWeight = FontWeight(weight = 500),
                         lineHeight = 22.sp,
                         letterSpacing = 0.sp,
                         color = MaterialTheme.colorScheme.inverseOnSurface,
