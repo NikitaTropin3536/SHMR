@@ -8,15 +8,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.financility"
+    namespace = "com.example.financialapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.financility"
+        applicationId = "com.example.financialapp"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.52"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -76,7 +76,7 @@ dependencies {
 
     // modules
     implementation(project(":feature_bill"))
-    implementation(project(":feature_transations"))
+    implementation(project(":feature_transactions"))
     implementation(project(":feature_settings"))
     implementation(project(":feature_splash"))
 
@@ -93,5 +93,8 @@ dependencies {
 
     // to get account
     implementation(project(":account"))
+
+    // to get transactions
+    implementation(project(":transactions"))
 
 }

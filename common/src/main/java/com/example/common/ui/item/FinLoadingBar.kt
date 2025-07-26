@@ -14,7 +14,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
-fun FinancilityLoadingBar (
+fun FinLoadingBar (
     modifier: Modifier
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("loading.json"))

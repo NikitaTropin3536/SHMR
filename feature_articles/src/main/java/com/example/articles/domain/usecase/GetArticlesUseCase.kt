@@ -1,7 +1,7 @@
 package com.example.articles.domain.usecase
 
 import com.example.articles.domain.ArticlesRepository
-import com.example.common.core.model.CategoryModel
+import com.example.common.core.model.category.CategoryModel
 import com.example.core.network.retryRequest
 import jakarta.inject.Inject
 

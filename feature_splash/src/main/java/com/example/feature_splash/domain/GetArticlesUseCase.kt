@@ -1,7 +1,7 @@
 package com.example.feature_splash.domain
 
 import com.example.articles.domain.ArticlesRepository
-import com.example.common.core.model.CategoryModel
+import com.example.common.core.model.category.CategoryModel
 import jakarta.inject.Inject
 
 /**

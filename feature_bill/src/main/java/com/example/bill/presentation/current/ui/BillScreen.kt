@@ -21,20 +21,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.bill.presentation.current.ui.BillView
+import com.example.common.R
 import com.example.bill.presentation.current.viewmodel.BillAction
 import com.example.bill.presentation.current.viewmodel.BillEvent
 import com.example.bill.presentation.current.viewmodel.BillViewModel
-import com.example.common.R
 import com.example.common.navigation.Route
-import com.example.common.ui.item.FinancilityErrorMessage
-import com.example.common.ui.item.FinancilityLoadingBar
-import com.example.common.ui.item.FinancilitySnackBar
-import com.example.common.ui.nav.FinancilityBottomBar
-import com.example.common.ui.nav.FinancilityTopBar
-import com.example.core.network.FinancilityResult
+import com.example.common.ui.item.FinErrorMessage
+import com.example.common.ui.item.FinLoadingBar
+import com.example.common.ui.item.FinSnackBar
+import com.example.common.ui.nav.FinBottomBar
+import com.example.common.ui.nav.FinTopBar
+import com.example.core.network.FinResult
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -66,13 +66,13 @@ fun BillScreen (
 
     Scaffold (
         bottomBar = {
-            FinancilityBottomBar(
+            FinBottomBar(
                 navController = navController
             )
         },
         topBar = {
-            FinancilityTopBar(
-                title = "Мой счет",
+            FinTopBar(
+                title = stringResource(R.string.my_bill),
                 actions = {
                     IconButton(
                         onClick = {
@@ -107,12 +107,12 @@ fun BillScreen (
             }
         },
         floatingActionButtonPosition = FabPosition.End,
-        snackbarHost = { FinancilitySnackBar(snackBarHostState) }
+        snackbarHost = { FinSnackBar(snackBarHostState) }
     ) { padding ->
 
         when (state.status) {
-            FinancilityResult.Error -> {
-                FinancilityErrorMessage(
+            FinResult.Error -> {
+                FinErrorMessage(
                     modifier = Modifier
                         .padding(padding),
                     text = error,
@@ -121,19 +121,17 @@ fun BillScreen (
                     }
                 )
             }
-            FinancilityResult.Loading -> {
-                FinancilityLoadingBar(
+            FinResult.Loading -> {
+                FinLoadingBar(
                     modifier = Modifier
                         .padding(padding)
                 )
             }
-            FinancilityResult.Success -> {
+            FinResult.Success -> {
                 BillView(
                     modifier = Modifier.padding(padding),
                     state = state
-                ) {
-                    viewModel.onEvent(it)
-                }
+                )
             }
         }
 

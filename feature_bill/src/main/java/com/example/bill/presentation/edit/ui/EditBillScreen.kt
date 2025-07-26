@@ -16,18 +16,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.bill.presentation.edit.viewmodel.EditBillAction
 import com.example.bill.presentation.edit.viewmodel.EditBillEvent
 import com.example.bill.presentation.edit.viewmodel.EditBillViewModel
-import com.example.common.R
 import com.example.common.navigation.Route
-import com.example.common.ui.item.FinancilityErrorMessage
-import com.example.common.ui.item.FinancilityLoadingBar
-import com.example.common.ui.item.FinancilitySnackBar
-import com.example.common.ui.nav.FinancilityBottomBar
-import com.example.common.ui.nav.FinancilityTopBar
-import com.example.core.network.FinancilityResult
+import com.example.common.ui.item.FinErrorMessage
+import com.example.common.ui.item.FinLoadingBar
+import com.example.common.ui.item.FinSnackBar
+import com.example.common.ui.nav.FinBottomBar
+import com.example.common.ui.nav.FinTopBar
+import com.example.core.network.FinResult
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -62,23 +62,23 @@ fun EditBillScreen (
 
     Scaffold (
         bottomBar = {
-            FinancilityBottomBar(
+            FinBottomBar(
                 navController = navController
             )
         },
         topBar = {
-            FinancilityTopBar(
-                title = "Мой счет",
+            FinTopBar(
+                title = stringResource(com.example.bill.R.string.my_bill),
                 actions = {
                     IconButton(
                         onClick = {
-                            if (state.status == FinancilityResult.Success) {
+                            if (state.status == FinResult.Success) {
                                 viewModel.onEvent(EditBillEvent.OnSaveBill)
                             }
                         }
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_check),
+                            painter = painterResource(com.example.common.R.drawable.ic_check),
                             contentDescription = "Сохранить",
                             tint = MaterialTheme.colorScheme.surfaceContainer
                         )
@@ -89,7 +89,7 @@ fun EditBillScreen (
                         onClick = { navController.popBackStack() }
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_cross),
+                            painter = painterResource(com.example.common.R.drawable.ic_cross),
                             contentDescription = "Назад",
                             tint = MaterialTheme.colorScheme.surfaceContainer
                         )
@@ -100,12 +100,12 @@ fun EditBillScreen (
         modifier = Modifier
             .fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.onSurface,
-        snackbarHost = { FinancilitySnackBar(snackBarHostState) }
+        snackbarHost = { FinSnackBar(snackBarHostState) }
     ) { padding ->
 
         when (state.status) {
-            FinancilityResult.Error -> {
-                FinancilityErrorMessage(
+            FinResult.Error -> {
+                FinErrorMessage(
                     modifier = Modifier
                         .padding(padding),
                     text = error,
@@ -114,13 +114,13 @@ fun EditBillScreen (
                     }
                 )
             }
-            FinancilityResult.Loading -> {
-                FinancilityLoadingBar(
+            FinResult.Loading -> {
+                FinLoadingBar(
                     modifier = Modifier
                         .padding(padding)
                 )
             }
-            FinancilityResult.Success -> {
+            FinResult.Success -> {
                 EditBillView(
                     modifier = Modifier.padding(padding),
                     state = state

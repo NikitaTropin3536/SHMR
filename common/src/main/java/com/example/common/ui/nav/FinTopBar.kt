@@ -10,44 +10,12 @@ import androidx.compose.runtime.Composable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinancilityTopBar (
+fun FinTopBar (
     title: String,
     containerColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.primary,
     navIcon: (@Composable () -> Unit)? = null,
     actions: (@Composable () -> Unit)? = null,
 ) {
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .background(containerColor)
-//            .systemBarsPadding()
-//            .padding(start = 8.dp, end = 8.dp, top = 4.dp)
-//    ) {
-//        // Title по центру
-//        Text(
-//            text = title,
-//            fontWeight = FontWeight.W400,
-//            fontSize = 22.sp,
-//            textAlign = TextAlign.Center,
-//            color = MaterialTheme.colorScheme.inverseOnSurface,
-//            modifier = Modifier.align(Alignment.Center)
-//        )
-//
-//        // Навигационная иконка слева
-//        navIcon?.let {
-//            Box(modifier = Modifier.align(Alignment.CenterStart)) {
-//                it()
-//            }
-//        }
-//
-//        // Actions справа
-//        actions?.let {
-//            Box(modifier = Modifier.align(Alignment.CenterEnd)) {
-//                it()
-//            }
-//        }
-//    }
-
     CenterAlignedTopAppBar(
 
         title = {
@@ -79,4 +47,5 @@ fun FinancilityTopBar (
         )
 
     )
+
 }

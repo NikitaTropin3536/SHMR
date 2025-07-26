@@ -6,7 +6,8 @@ import com.example.storage.data.dao.AccountDao
 import com.example.storage.data.dao.CategoryDao
 import com.example.storage.data.dao.TransactionDao
 import com.example.storage.di.module.AppRoomModule
-import com.example.storage.di.module.ArticlesSyncModule
+import com.example.storage.di.module.ArticlesStorageModule
+
 
 /**
  * Компонент, который хранит в себе базу данных для офлайн-режима
@@ -19,7 +20,7 @@ import com.example.storage.di.module.ArticlesSyncModule
     ],
     modules = [
         AppRoomModule::class,
-        ArticlesSyncModule::class
+        ArticlesStorageModule::class
     ]
 )
 interface DatabaseComponent {

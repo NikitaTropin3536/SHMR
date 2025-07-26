@@ -13,12 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.common.R
-import com.example.common.core.model.CategoryModel
-import com.example.common.ui.item.FinancilityListItem
+import com.example.common.core.model.category.CategoryModel
+import com.example.common.ui.item.FinListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinancilityDropDown (
+fun FinDropDown (
     title: String,
     options: List<CategoryModel>,
     previousData: String,
@@ -40,7 +40,7 @@ fun FinancilityDropDown (
             expanded = !expanded
         },
     ) {
-        FinancilityListItem(
+        FinListItem(
             title = title,
             trailingText = textValue,
             modifier = modifier

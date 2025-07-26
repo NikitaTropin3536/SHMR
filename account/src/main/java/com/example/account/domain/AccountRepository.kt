@@ -1,6 +1,6 @@
 package com.example.account.domain
 
-import com.example.common.core.model.AccountBriefModel
+import com.example.common.core.model.account.AccountBriefModel
 
 interface AccountRepository {
 

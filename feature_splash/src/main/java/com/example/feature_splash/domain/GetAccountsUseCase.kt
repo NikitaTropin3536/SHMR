@@ -1,7 +1,7 @@
 package com.example.feature_splash.domain
 
 import com.example.account.domain.AccountRepository
-import com.example.common.core.model.AccountBriefModel
+import com.example.common.core.model.account.AccountBriefModel
 
 /**
  * Use Case для получения счетов пользователя

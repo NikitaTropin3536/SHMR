@@ -25,12 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.common.R
-import com.example.common.core.model.CurrencyOption
-import com.example.common.ui.item.FinancilityListItem
+import com.example.common.core.model.account.CurrencyOption
+import com.example.common.ui.item.FinListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FinancilityCurrencySheet (
+fun FinCurrencySheet (
     currencies: List<CurrencyOption>,
     onCurrencyClicked: (CurrencyOption) -> Unit,
     onCloseSheet: () -> Unit
@@ -46,7 +46,7 @@ fun FinancilityCurrencySheet (
     ) {
 
         currencies.forEach { currency ->
-            FinancilityListItem(
+            FinListItem(
                 title = currency.label,
                 emoji = currency.symbol,
                 backgroundEmojiColor = White,

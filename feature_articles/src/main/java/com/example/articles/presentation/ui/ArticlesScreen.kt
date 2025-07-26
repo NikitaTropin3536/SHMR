@@ -12,18 +12,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.articles.presentation.ui.ArticlesView
+import com.example.articles.R
+import com.example.common.ui.item.FinErrorMessage
+import com.example.common.ui.item.FinLoadingBar
+import com.example.common.ui.item.FinSnackBar
 import com.example.articles.presentation.viewmodel.ArticleAction
 import com.example.articles.presentation.viewmodel.ArticlesEvent
 import com.example.articles.presentation.viewmodel.ArticlesViewModel
-import com.example.common.ui.item.FinancilityErrorMessage
-import com.example.common.ui.item.FinancilityLoadingBar
-import com.example.common.ui.item.FinancilitySnackBar
-import com.example.common.ui.nav.FinancilityBottomBar
-import com.example.common.ui.nav.FinancilityTopBar
-import com.example.core.network.FinancilityResult
+import com.example.common.ui.nav.FinBottomBar
+import com.example.common.ui.nav.FinTopBar
+import com.example.core.network.FinResult
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -54,25 +55,25 @@ fun ArticlesScreen (
 
     Scaffold (
         bottomBar = {
-            FinancilityBottomBar(
+            FinBottomBar(
                 navController = navController
             )
         },
         topBar = {
-            FinancilityTopBar(
-                title = "Мои статьи",
+            FinTopBar(
+                title = stringResource(R.string.my_articles),
                 actions = { }
             )
         },
         modifier = Modifier
             .fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.onSurface,
-        snackbarHost = { FinancilitySnackBar(snackBarHostState) }
+        snackbarHost = { FinSnackBar(snackBarHostState) }
     ) { padding ->
 
         when (state.status) {
-            FinancilityResult.Error -> {
-                FinancilityErrorMessage(
+            FinResult.Error -> {
+                FinErrorMessage(
                     modifier = Modifier
                         .padding(padding),
                     text = error,
@@ -81,13 +82,13 @@ fun ArticlesScreen (
                     }
                 )
             }
-            FinancilityResult.Loading -> {
-                FinancilityLoadingBar(
+            FinResult.Loading -> {
+                FinLoadingBar(
                     modifier = Modifier
                         .padding(padding)
                 )
             }
-            FinancilityResult.Success -> {
+            FinResult.Success -> {
                 ArticlesView(
                     modifier = Modifier.padding(padding),
                     state = state,

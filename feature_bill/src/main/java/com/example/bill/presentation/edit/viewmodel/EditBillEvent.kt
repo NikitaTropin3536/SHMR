@@ -1,6 +1,6 @@
 package com.example.bill.presentation.edit.viewmodel
 
-import com.example.common.core.model.CurrencyOption
+import com.example.common.core.model.account.CurrencyOption
 
 /**
  * События экрана редактирования счетов

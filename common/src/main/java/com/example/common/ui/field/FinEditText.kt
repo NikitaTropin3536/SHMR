@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.example.common.R
 
 @Composable
-fun FinancilityEditText (
+fun FinEditText (
     previousData: String,
     label: String,
     isShowTrailingIcon: Boolean = true,

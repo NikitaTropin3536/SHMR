@@ -9,7 +9,7 @@ import com.example.articles.data.ArticlesRepositoryImpl
 import com.example.core.di.utils.CoreProvider
 import com.example.storage.data.sync.AppSyncStorage
 import com.example.storage.di.DaggerDatabaseComponent
-import com.example.transations.data.repository.TransactionsRepositoryImpl
+import com.example.transactions.data.TransactionsDatasourceImpl
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -42,7 +42,7 @@ class SyncDataWorker(
         appSyncStorage = syncer
     )
 
-    private val transactionsRepository = TransactionsRepositoryImpl(
+    private val transactionsRepository = TransactionsDatasourceImpl(
         transactionDao = db.transactionDao(),
         appSyncStorage = syncer
     )

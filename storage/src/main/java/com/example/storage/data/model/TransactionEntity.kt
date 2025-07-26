@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.storage.data.model.AccountEntity
+import com.example.storage.data.model.CategoryEntity
 
 @Entity(
     tableName = "transactions",

@@ -5,7 +5,9 @@ import dagger.Provides
 import com.example.account.domain.AccountRepository
 import com.example.bill.domain.repository.BillRepository
 import com.example.bill.domain.usecase.GetBillInfoUseCase
+import com.example.bill.domain.usecase.GetTransactionsUseCase
 import com.example.bill.domain.usecase.UpdateBillUseCase
+import com.example.transactions.domain.TransactionsDatasource
 
 /**
  * Модуль use-case счета
@@ -27,5 +29,13 @@ class BillUseCaseModule {
     ): UpdateBillUseCase {
         return UpdateBillUseCase(billRepository)
     }
+
+    @Provides
+    fun provideGetTransactionsUseCase(
+        transactionsDatasource: TransactionsDatasource
+    ): GetTransactionsUseCase {
+        return GetTransactionsUseCase(transactionsDatasource)
+    }
+
 
 }

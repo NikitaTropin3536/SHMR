@@ -22,10 +22,10 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.common.ui.btn.FinancilityButton
+import com.example.common.ui.btn.FinButton
 
 @Composable
-fun FinancilityErrorMessage (
+fun FinErrorMessage (
     modifier: Modifier,
     text : String?,
     onUpdate : () -> Unit
@@ -67,7 +67,7 @@ fun FinancilityErrorMessage (
             )
         }
 
-        FinancilityButton(
+        FinButton(
             modifier = Modifier
                 .fillMaxWidth(),
             text = "Обновить",

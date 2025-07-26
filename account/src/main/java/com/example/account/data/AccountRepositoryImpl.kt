@@ -2,7 +2,7 @@ package com.example.account.data
 
 import com.example.account.domain.AccountRepository
 import com.example.common.constants.Constants
-import com.example.common.core.model.AccountBriefModel
+import com.example.common.core.model.account.AccountBriefModel
 import com.example.core.error.ApiException
 import com.example.core.error.OfflineDataException
 import com.example.core.network.ktorClient
